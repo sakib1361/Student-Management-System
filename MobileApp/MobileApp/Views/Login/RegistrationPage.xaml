@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:CustomPage xmlns="http://xamarin.com/schemas/2014/forms"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     mc:Ignorable="d"
+                     xmlns:controls="clr-namespace:MobileApp.Controls"
+                     xmlns:vm="clr-namespace:Mobile.Core.ViewModels;assembly=Mobile.Core"
+                     x:DataType="vm:RegistrationViewModel"
+                     x:TypeArguments="vm:RegistrationViewModel"
+                     Title="Registration"
+                     x:Class="MobileApp.Views.Login.RegistrationPage">
+    <Grid d:BindingContext="{x:Static vm:RegistrationViewModel}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="2*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Image Aspect="AspectFill"
+               Source="front_bg.ong" />
+        <BoxView BackgroundColor="Black"
+                 Opacity="0.6" />
+        <Frame CornerRadius="60"
+               HeightRequest="120"
+               Padding="0"
+               Margin="-40"
+               WidthRequest="120"
+               VerticalOptions="End"
+               HorizontalOptions="Center">
+            <Image Source="iitlogo.png"
+                   Margin="20"
+                   Aspect="AspectFit" />
+        </Frame>
+        <Frame Grid.Row="1"
+               Margin="15">
+            <Grid>
+                <StackLayout Spacing="0"
+                             IsVisible="{Binding ShowRoll}"
+                             VerticalOptions="Center">
+                    <Entry Text="{Binding RollNo}"
+                           Keyboard="Numeric"
+                           Placeholder="Roll Number" />
+                    <Label Text="* If you dont have the roll number, check your mail or contact with admin."
+                           FontSize="Micro"
+                           Margin="10,0" />
+                    <Entry Text="{Binding PhoneNo}"
+                           Margin="0,20,0,0"
+                           Keyboard="Numeric"
+                           Placeholder="Phone Number" />
+                    <Label Text="* Please use the mobile number used for registration.(+88xxxxxxxxxxx)"
+                           FontSize="Micro"
+                           Margin="10,0" />
+                </StackLayout>
+                <StackLayout VerticalOptions="Center"
+                             IsVisible="{Binding ShowMobile}">
+                    <Entry Text="{Binding OTPToken}"
+                           HorizontalOptions="Center"
+                           Keyboard="Numeric"
+                           WidthRequest="100"
+                           HorizontalTextAlignment="Center" />
+                    <Label HorizontalOptions="Center"
+                           Text="OTP Token"
+                           FontSize="Small" />
+                </StackLayout>
+                <StackLayout IsVisible="{Binding ShowPassword}"
+                             VerticalOptions="Center">
+                    <Grid Margin="10,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="3*" />
+                        </Grid.ColumnDefinitions>
+                        <Label Text="Roll No" />
+                        <Label Text="{Binding RollNo}"
+                               d:Text="181909"
+                               Grid.Column="1" />
+                        <Label Text="Phone No"
+                               Grid.Row="1" />
+                        <Label Text="{Binding PhoneNo}"
+                               d:Text="017000000"
+                               Grid.Row="1"
+                               Grid.Column="1" />
+                    </Grid>
+                    <Entry Text="{Binding Password}"
+                           Placeholder="Password"
+                           Margin="0,20,0,0" />
+                    <Entry Text="{Binding ConfirmPassword}"
+                           Placeholder="Confirm Password" />
+                </StackLayout>
+            </Grid>
+        </Frame>
+        <Button Text="Next"
+                Command="{Binding PhoneSubmitCommand}"
+                Grid.Row="2"
+                VerticalOptions="End"
+                HorizontalOptions="End"
+                IsVisible="{Binding ShowRoll}"
+                BackgroundColor="WhiteSmoke"
+                TextColor="DarkBlue" />
+        
+       
+        <Button Text="Next"
+                Command="{Binding VerifyCommand}"
+                Grid.Row="2"
+                VerticalOptions="End"
+                HorizontalOptions="End"
+                IsVisible="{Binding ShowMobile}"
+                BackgroundColor="WhiteSmoke"
+                TextColor="DarkBlue" />
+        
+       
+        <Button Style="{StaticResource SaveButton}"
+                VerticalOptions="End"
+                Command="{Binding RegisterCommand}"
+                Grid.Row="2"
+                Text="Submit"
+                IsVisible="{Binding ShowPassword}"
+                Margin="2" />
+    </Grid>
+</controls:CustomPage>

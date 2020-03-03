@@ -1,0 +1,120 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:CustomPage xmlns="http://xamarin.com/schemas/2014/forms"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     mc:Ignorable="d"
+                     Title="Manage Work Items"
+                     xmlns:helpers="clr-namespace:MobileApp.Helpers"
+                     xmlns:model="clr-namespace:CoreEngine.Model.DBModel;assembly=CoreEngine"
+                     xmlns:pk="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
+                     xmlns:controls="clr-namespace:MobileApp.Controls"
+                     xmlns:vm="clr-namespace:Mobile.Core.ViewModels;assembly=Mobile.Core"
+                     x:TypeArguments="vm:TodoAddViewModel"
+                     x:DataType="vm:TodoAddViewModel"
+                     x:Class="MobileApp.Views.Bulletin.TodoAddPage">
+    <Grid d:BindingContext="{x:Static vm:TodoAddViewModel}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <pk:PancakeView HeightRequest="200"
+                        Grid.RowSpan="2"
+                        VerticalOptions="Start"
+                        BackgroundGradientStartColor="DarkBlue"
+                        BackgroundGradientEndColor="LightBlue" />
+        <Frame Margin="10,5">
+            <StackLayout>
+                <Entry Placeholder="Title"
+                       Text="{Binding CurrentItem.Title}" />
+                <Editor Placeholder="Message"
+                        BackgroundColor="Transparent"
+                        Text="{Binding CurrentItem.Message}" />
+                <Grid RowSpacing="0">
+                    <Label Text="EventDate"
+                           VerticalOptions="End"
+                           FontSize="Small" />
+                    <Label Text="EventTime"
+                           VerticalOptions="End"
+                           Grid.Column="1"
+                           FontSize="Small" />
+                    <DatePicker Date="{Binding CurrentDate}" 
+                                VerticalOptions="Start"
+                                BackgroundColor="Transparent"
+                                Grid.Row="1"/>
+                    <TimePicker Time="{Binding CurrentTime}"
+                                VerticalOptions="Start"
+                                BackgroundColor="Transparent"
+                                Grid.Row="1"
+                                Grid.Column="1"/>
+                </Grid>
+            </StackLayout>
+        </Frame>
+        <Frame Grid.Row="1"
+               Padding="0"
+               Margin="10,5">
+            <ListView ItemsSource="{Binding AllUsers}"
+                      HasUnevenRows="True"
+                      helpers:CommandListView.ItemTappedCommand="{Binding UserSelectCommand}"
+                      SeparatorVisibility="None">
+                <ListView.Header>
+                    <StackLayout Padding="10">
+                        <Label Text="Tag Friends" />
+                        <BoxView HeightRequest="1"
+                                 BackgroundColor="Gray" />
+                    </StackLayout>
+                    
+                </ListView.Header>
+                <d:ListView.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>Semester 1</x:String>
+                        <x:String>Semester 2</x:String>
+                        <x:String>Semester 3</x:String>
+                        <x:String>Semester 4</x:String>
+                        <x:String>Semester 5</x:String>
+                    </x:Array>
+                </d:ListView.ItemsSource>
+                <ListView.ItemTemplate>
+                    <DataTemplate x:DataType="model:DBUser">
+                        <ViewCell>
+                            <Grid Margin="0,5"
+                                  Padding="10,0">
+                                <Frame HasShadow="False"
+                                       Padding="5"
+                                       BorderColor="LightGray">
+                                    <StackLayout Orientation="Horizontal">
+                                        <CheckBox IsChecked="{Binding IsChecked}" 
+                                                  Color="DarkBlue"/>
+                                        <StackLayout VerticalOptions="Center"
+                                                     Spacing="0">
+                                            <Label Text="{Binding Name}"
+                                                   d:Text="Name"
+                                                   TextColor="DarkBlue"
+                                                   FontAttributes="Bold" />
+                                            <Label Text="{Binding Roll}"
+                                                   d:Text="Roll"
+                                                   FontSize="Small" />
+                                        </StackLayout>
+                                    </StackLayout>
+                                   
+                                </Frame>
+                            </Grid>
+                            
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Frame>
+        <Button Grid.Row="2"
+                Style="{StaticResource SaveButton}"
+                Command="{Binding SaveCommand}"
+                Text="Save" />
+        <Grid Grid.RowSpan="3"
+              IsVisible="{Binding IsBusy}">
+            <BoxView BackgroundColor="Black"
+                     Opacity="0.3" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" />
+        </Grid>
+    </Grid>
+</controls:CustomPage>

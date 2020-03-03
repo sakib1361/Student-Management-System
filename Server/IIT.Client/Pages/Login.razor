@@ -1,0 +1,77 @@
+﻿@page "/login"
+@using IIT.Client.Services
+@layout LoginLayout
+@inject IMatToaster _matToaster
+@inject NavigationManager _navigationManager
+@inject ApiAuthenticationProvider _apiServiceProvider
+<MatCard>
+    <div class="logo">
+        <br />
+        <a href="/" title="Blazor Boilerplate Home">
+            <img src="images/iitlogo-blue.png" style="width:100px;"
+                 title="IIT Home" alt="IIT" />
+            <br />IIT
+        </a>
+        <h4>Log In</h4>
+        <br />
+        <br />
+    </div>
+    <EditForm OnValidSubmit="@SubmitLogin" Model="loginModel">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <fieldset>
+            <div class="form-group">
+                <MatTextField @bind-Value="@loginModel.Username"
+                              Label="User Name"
+                              Icon="person"
+                              IconTrailing="true"
+                              FullWidth="true"
+                              Required="true"></MatTextField>
+            </div>
+            <div class="form-group">
+                <MatTextField @bind-Value="@loginModel.Password"
+                              Label="Password"
+                              Icon="lock_outline"
+                              IconTrailing="true"
+                              FullWidth="true"
+                              Required="true"
+                              Type="password"></MatTextField>
+            </div>
+            <div class="form-group">
+                <MatCheckbox @bind-Value="@RememberMe" class="filled-in chk-col-blue">Remember Me</MatCheckbox>
+                <MatButton class="float-right" Raised="true">Login</MatButton>
+            </div>
+            <hr />
+        </fieldset>
+    </EditForm>
+</MatCard>
+
+@code{
+    LoginViewModel loginModel = new LoginViewModel();
+    bool RememberMe;
+    [CascadingParameter] Task<AuthenticationState> AuthenticationState { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationState).User;
+        if (user.Identity.IsAuthenticated)
+        {
+            if (user.IsInRole(CoreEngine.Model.Common.AppConstants.Admin))
+                _navigationManager.NavigateTo("/admin/");
+        }
+    }
+
+    private async void SubmitLogin()
+    {
+        var res = await _apiServiceProvider.Login(loginModel.Username,loginModel.Password,RememberMe);
+        if(res != null && res.Success)
+        {
+            Console.WriteLine("Login Success");
+            _navigationManager.NavigateTo("/admin/");
+        }
+        else
+        {
+            _matToaster.Add("Failed to Login. Please try again", MatToastType.Danger);
+        }
+    }
+}
+

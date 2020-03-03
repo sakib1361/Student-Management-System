@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:CustomPage xmlns="http://xamarin.com/schemas/2014/forms"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     mc:Ignorable="d"
+                     Title="Semester"
+                     xmlns:controls="clr-namespace:MobileApp.Controls"
+                     xmlns:vm="clr-namespace:Mobile.Core.ViewModels;assembly=Mobile.Core"
+                     xmlns:pk="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
+                     xmlns:model="clr-namespace:CoreEngine.Model.DBModel;assembly=CoreEngine"
+                     x:DataType="vm:SemesterViewModel"
+                     x:TypeArguments="vm:SemesterViewModel"
+                     x:Class="MobileApp.Views.Course.SemesterPage">
+    <Grid d:BindingContext="{x:Static vm:SemesterViewModel}"
+          x:Name="MainContainer">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <pk:PancakeView HeightRequest="200"
+                        Grid.RowSpan="2"
+                        VerticalOptions="Start"
+                        BackgroundGradientStartColor="DarkBlue"
+                        BackgroundGradientEndColor="LightBlue" />
+        <Grid  BackgroundColor="White"
+               Padding="10"
+               Margin="10,0">
+            <StackLayout>
+                <Label Text="{Binding CurrentSemester.Name}"
+                       FontAttributes="Bold"
+                       FontSize="Large" />
+                <StackLayout Orientation="Horizontal">
+                    <Label Text="{Binding CurrentSemester.StartsOn, StringFormat='{0:dd MMM, yyyy}'}" />
+                    <Label Text="-" />
+                    <Label Text="{Binding CurrentSemester.EndsOn, StringFormat='{0:dd MMM, yyyy}'}" />
+                </StackLayout>
+            </StackLayout>
+        </Grid>
+      
+        <RefreshView Command="{Binding RefreshCommand}"
+                     Grid.Row="1"
+                     IsRefreshing="{Binding IsRefreshisng}">
+            <CollectionView ItemsSource="{Binding Courses}">
+                <CollectionView.EmptyView>
+                    <Frame HeightRequest="250">
+                        <Label Text="No Courses Has benn added yet" 
+                               HorizontalOptions="Center"/>
+                    </Frame>
+                </CollectionView.EmptyView>
+                <d:CollectionView.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>Semester 1</x:String>
+                        <x:String>Semester 2</x:String>
+                        <x:String>Semester 3</x:String>
+                        <x:String>Semester 4</x:String>
+                        <x:String>Semester 5</x:String>
+                    </x:Array>
+                </d:CollectionView.ItemsSource>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="model:Course">
+                        <Grid Padding="10,5" >
+                            <Frame HasShadow="False"
+                                   BorderColor="LightGray">
+                                <Frame.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding BindingContext.CourseCommand, Source={x:Reference MainContainer}}"
+                                                          CommandParameter="{Binding}" />
+                                </Frame.GestureRecognizers>
+                                <StackLayout>
+                                    <Grid>
+                                        <Label Text="{Binding CourseId}"
+                                               d:Text="MITM"
+                                               FontSize="Large"
+                                               FontAttributes="Bold" />
+                                        <Label Text="{Binding CourseCredit, StringFormat='{0:N2}'}"
+                                               HorizontalOptions="End"
+                                               d:Text="3.0"
+                                               VerticalOptions="Center"
+                                               FontAttributes="Bold"
+                                               FontSize="Medium" />
+                                    </Grid>
+                                    <Label Text="{Binding CourseName}"
+                                           d:Text="Course Name. Can be Multiple Line. Should Take Care of it."
+                                           FontSize="Medium" />
+                                    <Label Text="{Binding Description}"
+                                           TextColor="DarkGray"
+                                           d:Text="{Binding}" />
+                                    <CollectionView ItemsSource="{Binding Lessons}"
+                                                    VerticalOptions="Start"
+                                                    HeightRequest="35">
+                                        <CollectionView.EmptyView>
+                                            <Label HorizontalOptions="Center"
+                                                   Text="No Class has been added yet" />
+                                        </CollectionView.EmptyView>
+                                        <CollectionView.ItemsLayout>
+                                            <LinearItemsLayout Orientation="Horizontal" />
+                                        </CollectionView.ItemsLayout>
+                                        <CollectionView.ItemTemplate>
+                                            <DataTemplate x:DataType="model:Lesson">
+                                                <Grid>
+                                                    <Frame BorderColor="LightGray"
+                                                           CornerRadius="10"
+                                                           Margin="0,0,5,0"
+                                                           Padding="5">
+                                                        <StackLayout Orientation="Horizontal"
+                                                                     VerticalOptions="Center">
+                                                            <Label Text="{Binding DayOfWeek}" />
+                                                            <Label Text="{Binding TimeOfLesson}" />
+                                                        </StackLayout>
+                                                    </Frame>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </CollectionView.ItemTemplate>
+                                    </CollectionView>
+                                    <!--<controls:StackListLayout ItemsSource="{Binding Lessons}"
+                                                              EmptyText="No Classes Has been addet yet"
+                                                              Orientation="Horizontal">
+                                        <controls:StackListLayout.ItemTemplate>
+                                            <DataTemplate x:DataType="model:Lesson">
+                                                <Frame BorderColor="LightGray"
+                                                       CornerRadius="10"
+                                                       Padding="10,5">
+                                                    <StackLayout Orientation="Horizontal">
+                                                        <Label Text="{Binding DayOfWeek}" />
+                                                        <Label Text="{Binding TimeOfDay}" />
+                                                    </StackLayout>
+                                                </Frame>
+                                            </DataTemplate>
+                                        </controls:StackListLayout.ItemTemplate>
+                                    </controls:StackListLayout>-->
+                                </StackLayout>
+                            </Frame>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+       
+        <Button Style="{StaticResource FloatingButton}"
+                HorizontalOptions="End"
+                Margin="20"
+                Grid.Row="1"
+                Command="{Binding AddCommand}"
+                ImageSource="{controls:IconFont IconType=Add, FontSize=24}"
+                VerticalOptions="End" />
+    </Grid>
+</controls:CustomPage>

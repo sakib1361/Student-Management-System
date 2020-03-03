@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Application xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             xmlns:converters="clr-namespace:MobileApp.Converters"
+             x:Class="MobileApp.App">
+    <Application.Resources>
+        <OnPlatform x:Key="MaterialFontFamily"
+                    x:TypeArguments="x:String">
+            <On Platform="iOS"
+                Value="Material Icons" />
+            <On Platform="Android"
+                Value="MaterialIcons-Regular.ttf#Material Icons" />
+            <On Platform="UWP"
+                Value="Assets/Fonts/materialdesignicons-webfont.ttf#Material Design Icons" />
+        </OnPlatform>
+        <Color x:Key="colorPrimary">#3F51B5</Color>
+        <Color x:Key="colorPrimaryDark">#2E3192</Color>
+        <Color x:Key="colorAccent">#3F51B5</Color>
+        <converters:BoolInverter x:Key="BoolInverter" />
+        <converters:IdenticonConverter x:Key="IdenticonConverter" />
+        <Style TargetType="ContentPage" ApplyToDerivedTypes="True">
+            <Setter Property="Visual"
+                    Value="Material" />
+            <Setter Property="BackgroundColor"
+                    Value="WhiteSmoke" />
+        </Style>
+        <Style TargetType="Entry"
+               ApplyToDerivedTypes="True">
+            <Setter Property="BackgroundColor"
+                    Value="Transparent" />
+        </Style>
+        <Style TargetType="ActivityIndicator">
+            <Setter Property="Color"
+                    Value="{StaticResource colorPrimary}" />
+            <Setter Property="HorizontalOptions"
+                    Value="Center" />
+            <Setter Property="VerticalOptions"
+                    Value="Center" />
+            <Setter Property="HeightRequest"
+                    Value="40" />
+            <Setter Property="WidthRequest"
+                    Value="40" />
+        </Style> 
+        <Style TargetType="Button"
+               x:Key="SaveButton">
+            <Setter Property="HorizontalOptions"
+                    Value="Center" />
+            <Setter Property="WidthRequest"
+                    Value="150" />
+            <Setter Property="CornerRadius"
+                    Value="10" />
+            <Setter Property="BorderColor"
+                    Value="DarkBlue" />
+            <Setter Property="BorderWidth"
+                    Value="1" />
+            <Setter Property="BackgroundColor"
+                    Value="White" />
+            <Setter Property="TextColor"
+                    Value="DarkBlue" />
+        </Style>
+        <Style TargetType="Button"
+               x:Key="FloatingButton">
+            <Setter Property="BackgroundColor"
+                    Value="DarkBlue" />
+            <Setter Property="HeightRequest"
+                    Value="50" />
+            <Setter Property="WidthRequest"
+                    Value="50" />
+            <Setter Property="CornerRadius"
+                    Value="25" />
+        </Style>
+        <Style TargetType="Label">
+            <Setter Property="TextColor"
+                    Value="Black" />
+        </Style>
+        <Style TargetType="Button"
+               x:Key="ActionMenuButton">
+            <Setter Property="Visual"
+                    Value="Default" />
+            <Setter Property="HeightRequest"
+                    Value="40" />
+            <Setter Property="WidthRequest"
+                    Value="40" />
+            <Setter Property="VerticalOptions"
+                    Value="Center" />
+            <Setter Property="HorizontalOptions"
+                    Value="Center" />
+            <Setter Property="BackgroundColor"
+                    Value="White" />
+            <Setter Property="CornerRadius"
+                    Value="20" />
+        </Style>
+    </Application.Resources>
+</Application>

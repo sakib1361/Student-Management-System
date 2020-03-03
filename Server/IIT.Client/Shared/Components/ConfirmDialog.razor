@@ -1,0 +1,34 @@
+﻿<MatDialog @bind-IsOpen="IsOpen">
+    <MatDialogTitle>Confirm?</MatDialogTitle>
+    <MatDialogContent>
+        <div class="m-3">
+           @Message
+        </div>
+    </MatDialogContent>
+    <MatDialogActions>
+        <MatButton OnClick="@CancelClick">Cancel</MatButton>
+        <MatButton OnClick="@ConfirmClick">Yes</MatButton>
+    </MatDialogActions>
+</MatDialog>
+
+@code {
+    [Parameter]
+    public Action ConfirmAction { get; set; }
+
+    [Parameter]
+    public bool IsOpen { get; set; }
+    [Parameter]
+    public string Message { get; set; } = "Are you sure you want to do this operation?";
+
+    private void CancelClick()
+    {
+        IsOpen = false;
+    }
+
+    private void ConfirmClick()
+    {
+        IsOpen = false;
+        ConfirmAction?.Invoke();
+    }
+
+}

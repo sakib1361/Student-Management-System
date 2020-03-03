@@ -1,0 +1,156 @@
+﻿@page "/admin/notices/addnotice"
+@page "/admin/notices/addnotice/{NoticeId:int}"
+@using BlazorInputFile
+@inject IBatchHandler _batchService
+@inject INoticeHandler _noticeHandler
+@inject IMatToaster _matToaster
+@inject NavigationManager _navigationManager
+
+<div class="card m-3 mat-elevation-z5">
+    <div class="card-header">
+        <EditForm OnValidSubmit="SubmitNotice" Model="NewNotice">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <fieldset>
+                <div class="form-group row">
+                    <MatDatePicker @bind-Value="@ActualTime"
+                                   EnableTime="true"
+                                   Label="Event Date"
+                                   Class="col-6"
+                                   Required="true" />
+                    <MatSelect Label="Batches"
+                               Class="col-6"
+                               @bind-Value="@BatchId">
+                        <MatOption TValue="int" Value="0">All Batch</MatOption>
+                        @foreach (var batch in currentbatches)
+                        {
+                            <MatOption TValue="int" Value="@batch.Id">@batch.Name</MatOption>
+                        }
+                    </MatSelect>
+                </div>
+                <div class="form-group">
+                    <MatTextField Label="Title"
+                                  @bind-Value="NewNotice.Title"
+                                  Required="true"
+                                  FullWidth="true" />
+                </div>
+                <div class="form-group">
+                    <MatTextField Label="Message"
+                                  @bind-Value="NewNotice.Message"
+                                  TextArea="true"
+                                  FullWidth="true"
+                                  Box="true" />
+                </div>
+            </fieldset>
+        </EditForm>
+    </div>
+    <div class="card-body">
+        <div>
+            <div>
+                <h6 class="float-left my-auto">Files</h6>
+                <MatFAB Mini="true"
+                        Class="input-file-custom my-auto float-right">
+                    <span class="material-icons">add</span>
+                    <InputFile multiple OnChange="OnAddMaterialClick" />
+                </MatFAB>
+            </div>
+            <br />
+            <MatDivider Class="mt-3"/>
+            <br />
+            @if (DBFiles.Count == 0)
+            {
+                <h6 class="text-center m-4">No file has been added</h6>
+            }
+            else
+            {
+                <MatList>
+                    @foreach (var item in DBFiles)
+                    {
+                        <MatListItem>
+                            <div class="row" style="width:100%">
+                                <span class="col-10 align-self-center">
+                                    @item.FileName
+                                </span>
+                                <span class="col-2 float-right">
+                                    <MatButton Icon="@MatIconNames.Delete"
+                                               OnClick="(() => DeleteItem(item))" />
+                                </span>
+
+                            </div>
+                        </MatListItem>
+                    }
+                </MatList>
+            }
+        </div>
+       
+    </div>
+</div>
+
+<div class="text-center">
+    <MatButton Class="btn btn-primary" OnClick="SubmitNotice">Submit</MatButton>
+</div>
+@code {
+
+    [Parameter]
+    public int NoticeId { get; set; }
+
+    private List<Batch> currentbatches = new List<Batch>();
+    Notice NewNotice = new Notice();
+    DateTime ActualTime
+    {
+        get=>NewNotice.EventDate;
+        set => value.ToUniversalTime().AddHours(6);
+    }
+
+    private int BatchId;
+    private const string AllBatch = "AllBatch";
+    List<DBFile> DBFiles { get; set; } = new List<DBFile>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentbatches = await _batchService.GetBatches();
+        if (NoticeId > 0)
+        {
+            NewNotice = await _noticeHandler.GetNotice(NoticeId);
+        }
+    }
+
+    private void DeleteItem(DBFile dBFile)
+    {
+        DBFiles.Remove(dBFile);
+        this.StateHasChanged();
+    }
+
+    private void OnAddMaterialClick(IFileListEntry[] fileLists)
+    {
+        DBFiles.Clear();
+        if (fileLists != null)
+        {
+            foreach (var item in fileLists)
+            {
+                DBFiles.Add(new DBFile(item.Data, item.Name));
+            }
+        }
+        this.StateHasChanged();
+    }
+
+    private async void SubmitNotice()
+    {
+        NewNotice.Batch = currentbatches.FirstOrDefault(x => x.Id == BatchId);
+        var resp = await _noticeHandler.AddPost(NewNotice, DBFiles);
+        if (resp == null)
+        {
+            _matToaster.Add("Failed to create new Notice", MatToastType.Danger);
+        }
+        else
+        {
+            var toast = resp.Actionstatus ? MatToastType.Success : MatToastType.Danger;
+            _matToaster.Add(resp.Message, MatToastType.Success);
+            if (resp.Actionstatus)
+            {
+                _navigationManager.NavigateTo("/admin/notices");
+                DBFiles.Clear();
+            }
+        }
+    }
+}

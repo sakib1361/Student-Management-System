@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:CustomPage xmlns="http://xamarin.com/schemas/2014/forms"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     mc:Ignorable="d"
+                     BackgroundColor="White"
+                     NavigationPage.HasNavigationBar="False"
+                     xmlns:vm="clr-namespace:Mobile.Core.ViewModels;assembly=Mobile.Core"
+                     x:DataType="vm:SplashViewModel"
+                     x:TypeArguments="vm:SplashViewModel"
+                     xmlns:controls="clr-namespace:MobileApp.Controls"
+                     x:Class="MobileApp.Views.Splash.SplashPage">
+    <ContentPage.Content>
+        <StackLayout VerticalOptions="Center">
+            <Image Source="iitlogo.png"
+                   Aspect="AspectFit"
+                   Margin="20"
+                   HorizontalOptions="Center"
+                   WidthRequest="150" />
+            <ActivityIndicator IsRunning="True"
+                               Margin="0,100,0,0"/>
+        </StackLayout>
+    </ContentPage.Content>
+</controls:CustomPage>

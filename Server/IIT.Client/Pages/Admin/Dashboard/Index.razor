@@ -1,0 +1,81 @@
+﻿@page "/admin/"
+@inject NavigationManager _navigation
+@inject ILessonHandler _lessonService
+@inject INoticeHandler _noticeService
+@inject IMemberHandler _memberService
+
+@if (IsBusy)
+{
+    <MatProgressBar Indeterminate="true"/>
+}
+else
+{
+    @if(UpcomingLessons!= null && UpcomingLessons.Count > 0)
+    {
+        <div class="card">
+            <div class="card-header">
+                <h4>Upcoming Classes</h4>
+            </div>
+            <div class="card-body">
+               <UpcomingLessons Lessons="UpcomingLessons"
+                                UpdateNoticeAction="(()=>UpdateNotice())"/>
+            </div>
+        </div>
+    }
+    else
+    {
+        <h5 class="text-center m-3">No Class Today</h5>
+    }
+    <br/>
+    <MatDivider/>
+    <br/>
+    @if(UpcomingNotices!= null && UpcomingNotices.Count > 0)
+    {
+        <div class="card">
+            <div class="card-header">
+                <h4>Upcoming Notices</h4>
+            </div>
+            <IIT.Client.Shared.Components.NoticesView Notices="UpcomingNotices"/>
+        </div>
+    }
+    <br/>
+    <br/>
+    <MatDivider/>
+    <br/>
+    <br/>
+    if(CurrentClassRepresentaives!= null && CurrentClassRepresentaives.Count > 0)
+    {
+        <div class="card">
+            <div class="card-header">
+                <h4>Current Batches</h4>
+            </div>
+            <div class="card-body">
+                <IIT.Client.Shared.Components.StudentsView Students="CurrentClassRepresentaives"
+                                                           ShowBatch =" true"/>
+            </div>
+        </div>
+    }
+}
+@code
+{
+    List<Lesson> UpcomingLessons;
+    List<Notice> UpcomingNotices;
+    List<DBUser> CurrentClassRepresentaives;
+    
+    private bool IsBusy = true;
+    protected override async Task OnInitializedAsync()
+    {
+        UpcomingLessons = await _lessonService.GetTodaysLessons();
+        UpcomingNotices = await _noticeService.GetUpcomingEvents(0, PostType.All);
+        CurrentClassRepresentaives = await _memberService.GetCurrentCr();
+        IsBusy = false;
+    }
+
+    private async void UpdateNotice()
+    {
+        UpcomingNotices = await _noticeService.GetUpcomingEvents(0, PostType.All);
+        this.StateHasChanged();
+    }
+}
+
+

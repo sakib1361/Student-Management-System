@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             xmlns:model="clr-namespace:CoreEngine.Model.DBModel;assembly=CoreEngine"
+             xmlns:local="clr-namespace:MobileApp.Views.Home"
+             xmlns:converters="clr-namespace:MobileApp.Converters"
+             xmlns:partials="clr-namespace:Mobile.Core.Models.Partials;assembly=Mobile.Core"
+             d:BackgroundColor="LightGray"
+             xmlns:controls="clr-namespace:MobileApp.Controls"
+             xmlns:pk="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
+             xmlns:vm="clr-namespace:Mobile.Core.ViewModels;assembly=Mobile.Core"
+             d:BindingContext="{x:Static vm:HomeViewModel}"
+             x:Class="MobileApp.Views.Home.WeekView">
+    <ContentView.Resources>
+        <converters:WeekButtonColorConverter x:Key="weekColor" />
+    </ContentView.Resources>
+    <Frame Margin="10,10,10,5"
+           x:Name="WeekGrid"
+           Padding="3">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.GestureRecognizers>
+                <SwipeGestureRecognizer Command="{Binding SwipeLeftCommand}"
+                                        Direction="Left" />
+                <SwipeGestureRecognizer Command="{Binding SwipteRightCommand}"
+                                        Direction="Right" />
+            </Grid.GestureRecognizers>
+            <Grid>
+                <Label Text="Time Table"
+                       HorizontalOptions="Start"
+                       VerticalOptions="Center"
+                       TextColor="DarkBlue"
+                       FontSize="Large"
+                       Margin="10" />
+                <Image HorizontalOptions="End"
+                       VerticalOptions="Center"
+                       Margin="10"
+                       Opacity="0.8"
+                       Source="{controls:IconFont IconType=Timeline, FontSize=20,Color=DarkBlue}">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding CalenderCommand}" />
+                    </Image.GestureRecognizers>
+                </Image>
+            </Grid>
+            <CollectionView Grid.Row="1"
+                            HeightRequest="42"
+                            ItemsSource="{Binding RoutineViewModel.Routines}"
+                            HorizontalOptions="Center">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Span="7"
+                                     Orientation="Vertical" />
+                </CollectionView.ItemsLayout>
+                <d:CollectionView.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>Sat</x:String>
+                        <x:String>Sun</x:String>
+                        <x:String>Mon</x:String>
+                        <x:String>Tue</x:String>
+                        <x:String>Wed</x:String>
+                        <x:String>Thu</x:String>
+                        <x:String>Fri</x:String>
+                    </x:Array>
+                </d:CollectionView.ItemsSource>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="partials:Routine">
+                        <Grid VerticalOptions="Start"
+                              HeightRequest="42">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding BindingContext.DaySelectCommand, Source={x:Reference WeekGrid}}"
+                                                      CommandParameter="{Binding}"/>
+                            </Grid.GestureRecognizers>
+                            <Grid HeightRequest="25"
+                                  VerticalOptions="Start"
+                                  BackgroundColor="WhiteSmoke" />
+                            <pk:PancakeView Padding="0"
+                                            WidthRequest="38"
+                                            HorizontalOptions="Center"
+                                            BorderColor="Transparent"
+                                            HeightRequest="40"
+                                            HasShadow="False"
+                                            IsVisible="{Binding IsSelected}"
+                                            BackgroundColor="DarkBlue"
+                                            CornerRadius="0,0,10,10">
+                               
+                            </pk:PancakeView>
+                            <Label Text="{Binding Day}"
+                                   d:Text="{Binding}"
+                                   Margin="0"
+                                   TextColor="{Binding IsSelected, Converter={StaticResource weekColor}}"
+                                   VerticalOptions="Start"
+                                   HorizontalOptions="Center" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <RefreshView IsRefreshing="{Binding IsRefreshisng}"
+                         Grid.Row="2"
+                         Command="{Binding RefreshCommand}">
+                <CollectionView ItemsSource="{Binding RoutineViewModel.Activities}">
+                    <CollectionView.EmptyView>
+                        <Label HorizontalTextAlignment="Center"
+                               Margin="20"
+                               Text="Hurray! No Activities Today" />
+                    </CollectionView.EmptyView>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="model:Activity">
+                            <Grid>
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding BindingContext.ActivityCommand, Source={x:Reference WeekGrid}}"
+                                                          CommandParameter="{Binding}" />
+                                </Grid.GestureRecognizers>
+                                <local:TimeLineView />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </RefreshView>
+            
+        </Grid>
+    </Frame>
+</ContentView>

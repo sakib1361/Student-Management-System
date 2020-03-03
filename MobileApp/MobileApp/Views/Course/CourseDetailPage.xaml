@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:CustomPage xmlns="http://xamarin.com/schemas/2014/forms"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     mc:Ignorable="d"
+                     Title="Course"
+                     xmlns:template="clr-namespace:MobileApp.Templates"
+                     xmlns:pk="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
+                     xmlns:controls="clr-namespace:MobileApp.Controls"
+                     xmlns:vm="clr-namespace:Mobile.Core.ViewModels;assembly=Mobile.Core"
+                     xmlns:model="clr-namespace:CoreEngine.Model.DBModel;assembly=CoreEngine"
+                     x:DataType="vm:CourseDetailViewModel"
+                     x:TypeArguments="vm:CourseDetailViewModel"
+                     x:Class="MobileApp.Views.Course.CourseDetailPage">
+    <Grid d:BindingContext="{x:Static vm:CourseDetailViewModel}"
+          x:Name="MainGrid">
+        <pk:PancakeView HeightRequest="200"
+                        VerticalOptions="Start"
+                        BackgroundGradientStartColor="DarkBlue"
+                        BackgroundGradientEndColor="LightBlue"/>
+        <RefreshView Command="{Binding RefreshCommand}"
+                     IsRefreshing="{Binding IsRefreshisng}">
+            <ScrollView Padding="10">
+                <StackLayout>
+                    <Frame Padding="10">
+                        <StackLayout>
+                            <Label Text="{Binding CurrentCourse.CourseId}"
+                                   d:Text="CourseId"
+                                   FontSize="Large"
+                                   TextColor="{StaticResource colorPrimaryDark}"
+                                   FontAttributes="Bold" />
+                            <Label Text="{Binding CurrentCourse.CourseName}"
+                                   d:Text="Name of the course. Can be multiline and long" />
+                            <Label Text="{Binding CurrentCourse.Description}"
+                                   FontSize="Small"
+                                   TextColor="DarkGray"
+                                   MinimumHeightRequest="200"
+                                   d:Text="This text supports  Html Tags"/>
+                        </StackLayout>
+                    </Frame>
+                    <Frame Margin="0,10"
+                           Padding="10,10">
+                        <StackLayout>
+                            <Label Text="Lessons"
+                                   FontAttributes="Bold"
+                                   FontSize="Medium"
+                                   TextColor="{StaticResource colorPrimaryDark}" />
+                            <controls:StackListLayout ItemsSource="{Binding CurrentCourse.Lessons}"
+                                                      EmptyText="No Item Has been Added Yet">
+                                <controls:StackListLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="model:Lesson">
+                                        <StackLayout Spacing="0"
+                                                     Padding="5"
+                                                     Margin="5">
+                                            <StackLayout Orientation="Horizontal">
+                                                <Label Text="{Binding DayOfWeek}"
+                                                       FontSize="Small"
+                                                       d:Text="Wednesday" />
+                                                <Label Text="{Binding TimeOfLesson}"
+                                                       FontSize="Small"
+                                                       d:Text="7.00 PM" />
+                                            </StackLayout>
+                                            <Label Text="{Binding TeacherName}"
+                                                   FontAttributes="Bold"
+                                                   d:Text="Teacher" />
+                                        </StackLayout>
+                                    </DataTemplate>
+                                </controls:StackListLayout.ItemTemplate>
+                            </controls:StackListLayout>
+                        </StackLayout>
+                    </Frame>
+                    <Frame Padding="10">
+                        <StackLayout>
+                            <Label Text="Course Material"
+                                   FontSize="Medium"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource colorPrimaryDark}" />
+                            <controls:StackListLayout ItemsSource="{Binding CurrentCourse.CourseMaterials}"
+                                                      EmptyText="No Item Has been Added Yet">
+                                <controls:StackListLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="model:DBFile">
+                                        <Grid Margin="5">
+                                            <Grid.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding BindingContext.FileCommand, Source={x:Reference MainGrid}}"
+                                                                      CommandParameter="{Binding}" />
+                                            </Grid.GestureRecognizers>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <Label Text="{Binding FileName}"
+                                                   FontSize="Small"
+                                                   TextDecorations="Underline"
+                                                   TextColor="DarkBlue"
+                                                   d:Text="Wednesday" />
+                                            <Image Source="{controls:IconFont IconType=FileDownload, Color=Blue}"
+                                                   Grid.Column="1"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </controls:StackListLayout.ItemTemplate>
+                            </controls:StackListLayout>
+                        </StackLayout>
+                    </Frame>
+                    <Frame Padding="10">
+                        <StackLayout>
+                            <Label Text="Course Notices"
+                                   FontSize="Medium"
+                                   FontAttributes="Bold"
+                                   TextColor="{StaticResource colorPrimaryDark}" />
+                            <controls:StackListLayout ItemsSource="{Binding CurrentCourse.Notices}"
+                                                      EmptyText="No Notice Has been Added Yet">
+                                <controls:StackListLayout.ItemTemplate>
+                                    <DataTemplate x:DataType="model:Notice">
+                                        <template:NoticeView Padding="-10"/>
+                                    </DataTemplate>
+                                </controls:StackListLayout.ItemTemplate>
+                            </controls:StackListLayout>
+                        </StackLayout>
+                    </Frame>
+                </StackLayout>
+            </ScrollView>
+        </RefreshView>
+       
+        <Button VerticalOptions="End"
+                HorizontalOptions="End"
+                HeightRequest="50"
+                WidthRequest="50"
+                CornerRadius="25"
+                Margin="20"
+                ImageSource="{controls:IconFont IconType=Edit}"
+                Command="{Binding EditCourseCommand}"
+                BackgroundColor="DarkBlue" />
+    </Grid>
+</controls:CustomPage>

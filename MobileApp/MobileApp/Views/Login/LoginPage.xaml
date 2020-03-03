@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:CustomPage xmlns="http://xamarin.com/schemas/2014/forms"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     mc:Ignorable="d"
+                     xmlns:controls="clr-namespace:MobileApp.Controls"
+                     NavigationPage.HasNavigationBar="False"
+                     xmlns:vm="clr-namespace:Mobile.Core.ViewModels;assembly=Mobile.Core"
+                     x:DataType="vm:LoginViewModel"
+                     x:TypeArguments="vm:LoginViewModel"
+                     x:Class="MobileApp.Views.Login.LoginPage">
+    <Grid d:BindingContext="{x:Static vm:LoginViewModel}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="4*" />
+            <RowDefinition Height="7*" />
+        </Grid.RowDefinitions>
+        <Image Aspect="AspectFill"
+               Source="front_bg.jpg" />
+        <BoxView BackgroundColor="Black"
+                 Opacity="0.6" />
+        <Frame CornerRadius="60"
+               HeightRequest="120"
+               Padding="0"
+               Margin="-40"
+               WidthRequest="120"
+               VerticalOptions="End"
+               HorizontalOptions="Center">
+            <Image Source="iitlogo.png"
+                   Margin="20"
+                   Aspect="AspectFit" />
+        </Frame>
+        <StackLayout Margin="30,0,30,0"
+                     Grid.Row="1"
+                     IsVisible="{Binding IsBusy, Converter={StaticResource BoolInverter}}"
+                     VerticalOptions="Center">
+            <Entry Placeholder="Username/Roll"
+                   Text="{Binding UserName}" />
+            <Entry Placeholder="Password"
+                   Text="{Binding Password}"
+                   IsPassword="True" />
+            <Button Margin="40,20"
+                    CornerRadius="10"
+                    HorizontalOptions="Center"
+                    WidthRequest="150"
+                    BackgroundColor="DarkBlue"
+                    VerticalOptions="Center"
+                    Command="{Binding LoginCommand}"
+                    Text="Login" />
+        </StackLayout>
+        <Button BackgroundColor="Transparent"
+                Visual="Default"
+                Grid.Row="1"
+                VerticalOptions="End"
+                Margin="30,0"
+                HorizontalOptions="Center"
+                Text="Register"
+                IsVisible="{Binding IsBusy, Converter={StaticResource BoolInverter}}"
+                Command="{Binding RegisterCommand}"
+                TextColor="Maroon" />
+        <ActivityIndicator Grid.Row="1"
+                           IsRunning="{Binding IsBusy}" />
+    </Grid>
+</controls:CustomPage>

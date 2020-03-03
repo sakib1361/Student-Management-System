@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "614586035492",
+    "firebase_url": "https://iit-student.firebaseio.com",
+    "project_id": "iit-student",
+    "storage_bucket": "iit-student.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:614586035492:android:a92abb91d65a32547217b1",
+        "android_client_info": {
+          "package_name": "com.du.iit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "614586035492-cpvn319lnl8hbgfkismrblie3mmjb662.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYd15a8QG7IjV-ARkuBroMdztCDwj1_dY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "614586035492-cpvn319lnl8hbgfkismrblie3mmjb662.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

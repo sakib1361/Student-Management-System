@@ -1,0 +1,80 @@
+﻿@using IIT.Client.Shared.Components
+@inject NavigationManager _navigation
+@inject IMatToaster _matToaster
+@inject INoticeHandler _noticeHandler
+<MatTable Items="Lessons"
+          PageSize="100"
+          ShowPaging="false"
+          AllowSelection="false">
+    <MatTableHeader>
+        <th style="width:60%">Course</th>
+        <th style="width:30%">Teacher</th>
+        <th style="width:20%">Time</th>
+        <th style="width:20%">Batch</th>
+        <th style="width:10%"></th>
+    </MatTableHeader>
+    <MatTableRow Context="Lesson">
+        <td>
+            <span>
+                @Lesson.Course.CourseId : @Lesson.Course.CourseName
+            </span>
+        </td>
+        <td>@Lesson.TeacherName</td>
+        <td>@Lesson.TimeOfDay</td>
+        <td>@Lesson.Course.Semester.Batch.Name</td>
+
+        <td>
+            <MatButton Label="Cancel"
+                       OnClick="(() => CancelClassClick(Lesson))" />
+        </td>
+    </MatTableRow>
+</MatTable>
+<ConfirmDialog ConfirmAction="CancelClass"
+               Message="@Title"
+               IsOpen="CancelClassOpen" />
+@code {
+    [Parameter]
+    public List<Lesson> Lessons { get; set; }
+    [Parameter]
+    public Action UpdateNoticeAction { get; set; }
+    private Lesson CurrentClass;
+    private string Title = "Are you sure you want to create a notification cancelling this class?";
+    private bool CancelClassOpen;
+    private void CancelClassClick(Lesson lesson)
+    {
+        CurrentClass = lesson;
+        CancelClassOpen = true;
+    }
+
+    private async void CancelClass()
+    {
+        CancelClassOpen = false;
+        if (CurrentClass != null)
+        {
+
+            var notice = new Notice()
+            {
+                Batch = CurrentClass.Course.Semester.Batch,
+                CourseId = CurrentClass.Course.Id,
+                Message = string.Format("Today's class of {0} at {1} has been cancelled",
+                                        CurrentClass.Course.CourseName, CurrentClass.TimeOfLesson),
+                Title = string.Format("Class cancellation of {0}", CurrentClass.Course.CourseId)
+            };
+            notice.CreatedOn = notice.CurrentTime;
+            notice.EventDate =notice.CurrentTime.Date.Add(CurrentClass.TimeOfDay).AddHours(-6);
+            Console.WriteLine(notice.EventDate.ToString());
+            var resp = await _noticeHandler.AddPost(notice, null);
+            if (resp != null)
+            {
+                var toast = resp.Actionstatus ? MatToastType.Success : MatToastType.Danger;
+                _matToaster.Add(resp.Message, toast);
+                UpdateNoticeAction?.Invoke();
+            }
+            else
+            {
+                _matToaster.Add("Failed to create Notice", MatToastType.Danger);
+            }
+        }
+        CurrentClass = null;
+    }
+}

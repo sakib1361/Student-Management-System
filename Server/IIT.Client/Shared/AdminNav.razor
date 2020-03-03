@@ -1,0 +1,25 @@
+﻿@inject NavigationManager _navigation
+<MatNavMenu Multi="true" Class="app-sidebar">
+    <AuthorizeView Roles="Admin">
+        <MatNavItem Href="@_navigation.ToAbsoluteUri("/admin").AbsoluteUri">
+            <MatIcon Icon="@MatIconNames.Home" />
+            Dashboard
+        </MatNavItem>
+        <MatNavItem Href="@_navigation.ToAbsoluteUri("/admin/batches").AbsoluteUri">
+            <MatIcon Icon="@MatIconNames.People" />
+            Batches
+        </MatNavItem>
+        <MatNavItem Href="@_navigation.ToAbsoluteUri("/admin/courses").AbsoluteUri">
+            <MatIcon Icon="@MatIconNames.Assignment" />
+            Courses
+        </MatNavItem>
+        <MatNavItem Href="@_navigation.ToAbsoluteUri("/admin/students").AbsoluteUri">
+            <MatIcon Icon="@MatIconNames.Class" />
+            Students
+        </MatNavItem>
+        <MatNavItem Href="@_navigation.ToAbsoluteUri("/admin/notices").AbsoluteUri">
+            <MatIcon Icon="@MatIconNames.Notifications" />
+            Notices
+        </MatNavItem>
+    </AuthorizeView>
+</MatNavMenu>

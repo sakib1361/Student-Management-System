@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:CustomPage xmlns="http://xamarin.com/schemas/2014/forms"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     mc:Ignorable="d"
+                     xmlns:local="clr-namespace:MobileApp.Views.Home"
+                     xmlns:pk="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
+                     xmlns:controls="clr-namespace:MobileApp.Controls"
+                     xmlns:vm="clr-namespace:Mobile.Core.ViewModels;assembly=Mobile.Core"
+                     x:DataType="vm:HomeViewModel"
+                     Title="Home"
+                     x:TypeArguments="vm:HomeViewModel"
+                     x:Class="MobileApp.Views.Home.HomePage">
+    <ContentPage.ToolbarItems>
+        <ToolbarItem IconImageSource="{controls:IconFont IconType=Notifications}"
+                     Order="Primary"
+                     Command="{Binding NoticesCommand}"
+                     Priority="0" />
+    </ContentPage.ToolbarItems>
+    <Grid d:BindingContext="{x:Static vm:HomeViewModel}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="130" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <pk:PancakeView HeightRequest="130"
+                        CornerRadius="0,0,0,30"
+                        BackgroundGradientEndColor="{StaticResource colorPrimary}"
+                        BackgroundGradientStartColor="DarkBlue">
+            <Grid d:BackgroundColor="DarkBlue">
+                <StackLayout HorizontalOptions="Start"
+                             Margin="20,0"
+                             VerticalOptions="Center"
+                             Spacing="3">
+                    <StackLayout Orientation="Horizontal"
+                                 Spacing="2">
+                        <Label Text="Hi,"
+                               TextColor="White"
+                               VerticalOptions="Center" />
+                        <Image Source="{controls:IconFont IconType=People, FontSize=14}" />
+                    </StackLayout>
+                    <Label Text="{Binding User.Name}"
+                           TextColor="White"
+                           FontSize="Large"
+                           FontAttributes="Bold"
+                           d:Text="UserName Last" />
+                    <Button Padding="-10"
+                            MinimumHeightRequest="1"
+                            CornerRadius="10"
+                            BorderColor="White"
+                            BorderWidth="1"
+                            Margin="3,5"
+                            HorizontalOptions="Start"
+                            HeightRequest="16"
+                            WidthRequest="80"
+                            FontSize="Micro"
+                            Text="Profile"
+                            Command="{Binding ProfileCommand}"
+                            TextColor="White"
+                            BackgroundColor="Transparent" />
+                </StackLayout>
+                <StackLayout Spacing="0"
+                             HorizontalOptions="End"
+                             VerticalOptions="Center"
+                             Margin="20,0">
+                    <Image Source="{controls:IconFont IconType=WbSunny}"
+                           HorizontalOptions="Center" />
+                    <Label Text="{Binding Today}"
+                           d:Text="Wednesday"
+                           HorizontalOptions="Center"
+                           TextColor="White"
+                           FontSize="Medium" />
+                    <Label Text="{Binding Date}"
+                           d:Text="04 March 2019"
+                           TextColor="White"
+                           HorizontalOptions="Center"
+                           FontSize="9" />
+                </StackLayout>
+            </Grid>
+        </pk:PancakeView>
+        <local:WeekView Grid.Row="1" />
+        <Grid Margin="10,3"
+              Grid.Row="2">
+            <Button ImageSource="{controls:IconFont IconType=PermContactCalendar, Color=Blue}"
+                    BackgroundColor="White"
+                    Command="{Binding CalenderCommand}"
+                    ContentLayout="Right,15"
+                    TextColor="Black"
+                    FontSize="Small"
+                    Text="Calender" />
+            <Button ImageSource="{controls:IconFont IconType=Event, Color=Blue}"
+                    BackgroundColor="White"
+                    Command="{Binding TodoItemCommand}"
+                    ContentLayout="Right,15"
+                    TextColor="Black"
+                    Grid.Column="1"
+                    FontSize="Small"
+                    Text="TodoItem" />
+        </Grid>
+    </Grid>
+</controls:CustomPage>

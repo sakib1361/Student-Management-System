@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<controls:CustomPage xmlns="http://xamarin.com/schemas/2014/forms"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     mc:Ignorable="d"
+                     Title="Lesson Information"
+                     xmlns:controls="clr-namespace:MobileApp.Controls"
+                     xmlns:vm="clr-namespace:Mobile.Core.ViewModels;assembly=Mobile.Core"
+                     x:DataType="vm:AddUpdateLessonViewModel"
+                     x:TypeArguments="vm:AddUpdateLessonViewModel"
+                     x:Class="MobileApp.Views.Course.AddUpdateLessonPage">
+    <Grid d:BindingContext="{x:Static vm:AddUpdateLessonViewModel}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <ScrollView>
+            <Frame VerticalOptions="Start">
+                <StackLayout>
+                    <Entry Text="{Binding Lesson.TeacherName}"
+                           Placeholder="Teacher Name" />
+                    <Entry Text="{Binding Lesson.RoomNo}"
+                           Placeholder="Room Number" />
+                    <Picker ItemsSource="{Binding DayOfWeeks}"
+                            SelectedItem="{Binding Lesson.DayOfWeek}" 
+                            BackgroundColor="Transparent"/>
+                    <TimePicker Time="{Binding Lesson.TimeOfDay}" 
+                                BackgroundColor="Transparent"/>
+                    <Editor Text="{Binding Lesson.Description}"
+                            HeightRequest="150" 
+                            Placeholder="Description"
+                            BackgroundColor="Transparent"/>
+                </StackLayout>
+            </Frame>
+        </ScrollView>
+        <Button Style="{StaticResource SaveButton}"
+                Grid.Row="1"
+                Text="Save"
+                Command="{Binding SaveCommand}" />
+    </Grid>
+</controls:CustomPage>

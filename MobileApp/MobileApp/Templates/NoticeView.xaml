@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             xmlns:model="clr-namespace:CoreEngine.Model.DBModel;assembly=CoreEngine"
+             xmlns:converters="clr-namespace:MobileApp.Converters"
+             x:Class="MobileApp.Templates.NoticeView">
+    <ContentView.Resources>
+        <converters:NoticeColorConverter x:Key="NoticeConverter" />
+    </ContentView.Resources>
+    <Grid Padding="10,5" x:DataType="model:Notice">
+        <Frame Padding="0,5">
+            <Grid Padding="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="45" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Frame BackgroundColor="{Binding PostType, Converter={StaticResource NoticeConverter}}"
+                       CornerRadius="20"
+                       HeightRequest="40"
+                       WidthRequest="40"
+                       VerticalOptions="Center"
+                       HorizontalOptions="Center"
+                       HasShadow="False"
+                       Padding="0">
+                    <Label Text="{Binding NameType}"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center"
+                           FontSize="Medium"
+                           TextColor="White"
+                           FontAttributes="Bold" />
+                </Frame>
+                <StackLayout Grid.Column="1"
+                             Spacing="0">
+                    <Label Text="{Binding Title}"
+                           FontSize="Medium"
+                           FontAttributes="Bold" />
+                    <Label Text="{Binding EventDate, StringFormat='{0:dd.MM.yyyy}'}"
+                           FontSize="12"
+                           TextColor="DarkGray"
+                           VerticalOptions="Center" />
+                   
+                </StackLayout>
+                <Label Text="{Binding Message}"
+                       Grid.ColumnSpan="2"
+                       Grid.Row="1"
+                       FontSize="Small" />
+            </Grid>
+        </Frame>
+    </Grid>
+</ContentView>

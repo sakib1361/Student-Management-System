@@ -1,0 +1,73 @@
+﻿@page "/admin/notices"
+@page "/admin/notices/index"
+@inject INoticeHandler _noticeHandler
+@inject NavigationManager _navigationManager
+
+@if (IsBusy)
+{
+    <MatProgressBar Indeterminate="true" />
+}
+else
+{
+    <div class="card">
+        <div class="card-header">
+            <h5 class="d-inline float-left">All Notices</h5>
+            <MatFAB Mini="true"
+                    Class="float-right"
+                    Icon="@MatIconNames.Add"
+                    OnClick="AddNoticeClick" />
+        </div>
+        <div class="card-body">
+            <MatTextField Label="Search"
+                          Icon="@MatIconNames.Search"
+                          FullWidth="true"
+                          IconTrailing="true"
+                          @bind-Value="SearchText" />
+            <IIT.Client.Shared.Components.NoticesView Notices="Notices" />
+        </div>
+    </div>
+}
+
+@code{
+    List<Notice> Notices;
+    bool IsBusy;
+    private string _search = string.Empty;
+    public string SearchText
+    {
+        get => _search;
+        set
+        {
+            _search = value;
+            SearchAction(_search);
+        }
+    }
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsBusy = true;
+        Notices = await _noticeHandler.GetPosts(0, PostType.All);
+        IsBusy = false;
+    }
+
+    private async void SearchAction(string data)
+    {
+        IsBusy = true;
+        if (string.IsNullOrWhiteSpace(data))
+        {
+            Notices = await _noticeHandler.GetPosts(0, PostType.All);
+        }
+        else
+        {
+            Notices = await _noticeHandler.SearchNotice(data);
+        }
+        IsBusy = false;
+        this.StateHasChanged();
+    }
+
+    private void AddNoticeClick()
+    {
+        _navigationManager.NavigateTo("/admin/notices/addnotice");
+    }
+}

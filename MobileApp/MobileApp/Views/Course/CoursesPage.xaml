@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:CustomPage xmlns="http://xamarin.com/schemas/2014/forms"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     mc:Ignorable="d"
+                     Title="Courses"
+                     xmlns:local="clr-namespace:MobileApp.Views.Course"
+                     xmlns:vm="clr-namespace:Mobile.Core.ViewModels;assembly=Mobile.Core"
+                     xmlns:controls="clr-namespace:MobileApp.Controls"
+                     x:DataType="vm:CoursesViewModel"
+                     xmlns:model="clr-namespace:CoreEngine.Model.DBModel;assembly=CoreEngine"
+                     x:TypeArguments="vm:CoursesViewModel"
+                     x:Class="MobileApp.Views.Course.CoursesPage">
+    <Grid d:BindingContext="{x:Static vm:CoursesViewModel}"
+          x:Name="MainContainer">
+        <RefreshView Command="{Binding RefreshCommand}"
+                     IsRefreshing="{Binding IsRefreshisng}">
+            <CollectionView ItemsSource="{Binding Semesters}">
+                <d:CollectionView.ItemsSource>
+                    <x:Array Type="{x:Type x:String}">
+                        <x:String>Semester 1</x:String>
+                        <x:String>Semester 2</x:String>
+                        <x:String>Semester 3</x:String>
+                        <x:String>Semester 4</x:String>
+                        <x:String>Semester 5</x:String>
+                    </x:Array>
+                </d:CollectionView.ItemsSource>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="model:Semester">
+                        <Grid>
+                            <local:CoursesPartialView />
+                            <Grid>
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding BindingContext.SemesterCommand, Source={x:Reference MainContainer}}"
+                                                          CommandParameter="{Binding}" />
+                                </Grid.GestureRecognizers>
+                            </Grid>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+       
+     
+    </Grid>
+</controls:CustomPage>

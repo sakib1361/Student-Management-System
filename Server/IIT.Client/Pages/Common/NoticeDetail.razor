@@ -1,0 +1,50 @@
+﻿@page "/common/notice_details/{NoticeId:int}"
+@inject INoticeHandler _noticeHandler;
+@if(Notice == null)
+{
+    <MatProgressBar Indeterminate="true"/>
+}
+else
+{
+    <div class="card">
+        <div class="card-header">
+            <h5>@Notice.Title</h5>
+        </div>
+        <div class="card-body">
+            @if (Notice.Batch == null)
+            {
+              <span>All Batch</span>
+            }
+            else
+            {
+                <span>@Notice.Batch.Name</span>
+            }
+            <span>@Notice.EventDate</span>
+            <br/>
+            <br/>
+            <p>@Notice.Message</p>
+            <br/>
+            <br/>
+            <MatDivider/>
+            <br/>
+            <br/>
+            @if (Notice.DBFiles != null)
+            {
+                foreach (var file in Notice.DBFiles)
+                {
+                    <a href="/api/files/index?id=@file.Id">@file.FileName</a>
+                    <br/>
+                }
+            }
+        </div>
+    </div>
+}
+@code {
+    [Parameter]
+    public int NoticeId { get; set; }
+    Notice Notice;
+    protected override async Task OnInitializedAsync()
+    {
+        Notice = await _noticeHandler.GetNotice(NoticeId);
+    }
+}

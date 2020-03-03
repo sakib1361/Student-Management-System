@@ -1,0 +1,75 @@
+﻿@page "/admin/courses/"
+@page "/admin/courses/index"
+@inject ICourseHandler _courseService
+@inject NavigationManager _navigation;
+<div class="card">
+    <div class="card-header">
+        <h4>Courses</h4>
+          
+    </div>
+    <div class="card-body">
+        <MatTextField @bind-Value="@SearchText"
+                      Label="Search"
+                      Icon="@MatIconNames.Search"
+                      IconTrailing="true"
+                      FullWidth="true" />
+        @if (IsBusy)
+        {
+            <MatProgressBar Indeterminate="true"/>
+        }
+        <MatTable Items="Courses"
+                  AllowSelection="true"
+                  ShowPaging="false"
+                  PageSize="100">
+            <MatTableHeader>
+                <th style="width:30%">Name</th>
+                <th style="width:15%">Id</th>
+                <th style="width:15%">Batch</th>
+                <th style="width:20%">Semester</th>
+                <th style="width:20%">Starts On</th>
+            </MatTableHeader>
+            <MatTableRow Context="course">
+                <td @onclick="(()=>ViewCourse(course))">@course.CourseName</td>
+                <td @onclick="(()=>ViewCourse(course))">@course.CourseId</td>
+                <td @onclick="(()=>ViewCourse(course))">@course.Semester.Batch.Name</td>
+                <td @onclick="(()=>ViewCourse(course))">@course.Semester.Name</td>
+                <td @onclick="(()=>ViewCourse(course))">@course.Semester.StartsOn.ToLongDateString()</td>
+            </MatTableRow>
+        </MatTable>
+    </div>
+</div>
+@code {
+    List<Course> Courses { get; set; } = new List<Course>();
+    bool IsBusy;
+    protected override async Task OnInitializedAsync()
+    {
+        IsBusy = true;
+        Courses = await _courseService.SearchCourse("");
+        IsBusy = false;
+    }
+
+    private string _search = string.Empty;
+    public string SearchText
+    {
+        get => _search;
+        set => SearchAction(value);
+    }
+
+    private async void SearchAction(string search)
+    {
+        _search = search;
+        if (!string.IsNullOrWhiteSpace(search) && search.Length > 0)
+        {
+            while (IsBusy) await Task.Delay(1000);
+            IsBusy = true;
+            Courses = await _courseService.SearchCourse(search);
+            IsBusy = false;
+            this.StateHasChanged();
+        }
+    }
+
+    private void ViewCourse(Course course)
+    {
+        _navigation.NavigateTo("/admin/courses/details/" + course.Id);
+    }
+}

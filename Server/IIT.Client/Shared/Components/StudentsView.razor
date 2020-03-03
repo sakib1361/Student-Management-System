@@ -1,0 +1,50 @@
+﻿@inject NavigationManager _navigationManager
+<MatTable Class="mat-elevation-z5" Items="@Students"
+          ShowPaging="false"
+          PageSize="100"
+          AllowSelection="true">
+    <MatTableHeader>
+        @if (ShowBatch)
+        {
+            <th style="width:20%">Batch</th>
+        }
+        <th style="width:40%">Name</th>
+        <th style="width:15%">Roll</th>
+        <th style="width:20%">Email</th>
+        <th style="width:15%">Phone</th>
+        <th style="width:10%">Role</th>
+    </MatTableHeader>
+    <MatTableRow Context="Student">
+        @if (ShowBatch)
+        {
+            <td @onclick="(() => ViewBatch(Student.Batch))">@Student.Batch.Name</td>
+        }
+        <td @onclick="(() => ViewStudent(Student))">@Student.Name</td>
+        <td @onclick="(() => ViewStudent(Student))">@Student.Roll</td>
+        <td @onclick="(() => ViewStudent(Student))">@Student.Email</td>
+        <td @onclick="(() => ViewStudent(Student))">@Student.PhoneNumber</td>
+        <td @onclick="(() => ViewStudent(Student))">
+            @if (Student.ClassRepresentative)
+            {
+                <span>CR</span>
+            }
+        </td>
+    </MatTableRow>
+</MatTable>
+
+@code {
+    [Parameter]
+    public List<DBUser> Students { get; set; }
+    [Parameter]
+    public bool ShowBatch { get; set; } = false;
+    public BaseTableRow BaseTableRow { get; set; }
+    private void ViewStudent(DBUser user)
+    {
+        _navigationManager.NavigateTo("/admin/students/details/" + user.Id);
+    }
+
+    private void ViewBatch(Batch batch)
+    {
+        _navigationManager.NavigateTo("/admin/batches/" + batch.Id);
+    }
+}

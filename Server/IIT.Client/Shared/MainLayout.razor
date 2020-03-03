@@ -1,0 +1,114 @@
+﻿@inherits LayoutComponentBase
+@using IIT.Client.Services
+@inject NavigationManager _navigationManager
+@inject ApiAuthenticationProvider _apiAuth
+
+@if (IsBusy)
+{
+    <MatProgressBar Indeterminate="true" />
+}
+else
+{
+    <MatDrawerContainer Style="width: 100vw; height: 100vh;" Class="@bbDrawerClass">
+        <MatDrawer @bind-Opened="@collapseNavMenu">
+            <header class="drawer-header">
+                <div class="text-center mt-3">
+                    <b>Institute of Information and Technology</b>
+                </div>
+            </header>
+            <br />
+            <MatDivider Padded="true" />
+            <br />
+            <AdminNav />
+        </MatDrawer>
+        <MatDrawerContent>
+            <MatAppBarContainer>
+                <MatAppBar Fixed="true">
+                    <MatAppBarRow>
+                        <MatAppBarSection>
+                            <MatIconButton Icon="menu"
+                                           OnClick="ToggleNavMenu" />
+                            <MatAppBarTitle>IIT Web App</MatAppBarTitle>
+                        </MatAppBarSection>
+                        <MatAppBarSection Align="@MatAppBarSectionAlign.End">
+                            <MatFAB Icon="@MatIconNames.People"
+                                    Mini="true"
+                                    OnClick="@OnClick" RefBack="@buttonForwardRef"></MatFAB>
+                            <MatMenu @ref="Menu" TargetForwardRef="@buttonForwardRef">
+                                <MatList>
+                                    <MatListItem @onclick="ProfileClick">Profile</MatListItem>
+                                    <MatListItem @onclick="LogoutClick">Logout</MatListItem>
+                                </MatList>
+                            </MatMenu>
+                        </MatAppBarSection>
+                    </MatAppBarRow>
+                </MatAppBar>
+
+                <MatAppBarContent>
+                    @Body
+                </MatAppBarContent>
+            </MatAppBarContainer>
+        </MatDrawerContent>
+    </MatDrawerContainer>
+
+}
+@code {
+    private bool collapseNavMenu = true;
+    private string bbDrawerClass = "full";
+    private bool IsBusy;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    [CascadingParameter] Task<AuthenticationState> AuthenticationState { get; set; }
+
+
+    ForwardRef buttonForwardRef = new ForwardRef();
+    BaseMatMenu Menu;
+
+    public void OnClick(MouseEventArgs e)
+    {
+        this.Menu.OpenAsync();
+    }
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+        if (collapseNavMenu)
+        {
+            bbDrawerClass = "full";
+        }
+        else
+        {
+            bbDrawerClass = "closed";
+        }
+
+        this.StateHasChanged();
+    }
+
+    private async void LogoutClick()
+    {
+        await _apiAuth.Logout();
+        _navigationManager.NavigateTo("/login/");
+    }
+
+    private void ProfileClick()
+    {
+        _navigationManager.NavigateTo("/admin/accounts/profile");
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsBusy = true;
+        var user = (await AuthenticationState).User;
+        if (user.Identity.IsAuthenticated)
+        {
+            if (user.IsInRole(CoreEngine.Model.Common.AppConstants.Admin))
+                _navigationManager.NavigateTo("/admin/");
+        }
+        else
+        {
+            _navigationManager.NavigateTo("/login/");
+        }
+        IsBusy = false;
+    }
+}

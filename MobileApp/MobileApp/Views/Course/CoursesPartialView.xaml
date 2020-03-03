@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             xmlns:model="clr-namespace:CoreEngine.Model.DBModel;assembly=CoreEngine"
+             x:DataType="model:Semester"
+             xmlns:controls="clr-namespace:MobileApp.Controls"
+             x:Class="MobileApp.Views.Course.CoursesPartialView">
+    <Frame Margin="10,5"
+           d:BindingContext="{x:Static model:Semester}"
+           Padding="10">
+        <StackLayout Spacing="0">
+            <Label Text="{Binding Name}"
+                   FontSize="Medium"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource colorPrimary}"
+                   d:Text="[Semester]" />
+            <StackLayout Orientation="Horizontal">
+                <StackLayout.Resources>
+                    <Style TargetType="Label">
+                        <Setter Property="FontSize"
+                                Value="Small" />
+                        <Setter Property="TextColor"
+                                Value="DarkGray" />
+                    </Style>
+                </StackLayout.Resources>
+                <Label Text="{Binding StartsOn, StringFormat='{0:dd MMM, yyyy}'}" />
+                <Label Text="-" />
+                <Label Text="{Binding EndsOn, StringFormat='{0:dd MMM, yyyy}'}" />
+            </StackLayout>
+            <Grid Margin="0,5">
+                <Label Text="Course"
+                       FontSize="Small"
+                       FontAttributes="Bold" />
+                <Label Text="Course Name"
+                       FontSize="Small"
+                       FontAttributes="Bold"
+                       Grid.Column="1"
+                       Grid.ColumnSpan="2" />
+                <Label Text="Credit"
+                       FontSize="Small"
+                       Grid.Column="3"
+                       HorizontalTextAlignment="Center"
+                       FontAttributes="Bold" />
+            </Grid>
+            <BoxView BackgroundColor="DarkGray"
+                     HeightRequest="1" />
+            <controls:StackListLayout ItemsSource="{Binding Courses}"
+                                      Margin="0,10"
+                                      EmptyText="Not Course Has been Added Yet">
+                <controls:StackListLayout.ItemTemplate>
+                    <DataTemplate x:DataType="model:Course">
+                        <Grid>
+                            <Grid.Resources>
+                                <Style TargetType="Label">
+                                    <Setter Property="FontSize"
+                                            Value="Small" />
+                                    <Setter Property="TextColor"
+                                            Value="Black" />
+                                </Style>
+                            </Grid.Resources>
+                            <Label Text="{Binding CourseId}"
+                                   d:Text="{Binding}" />
+                            <Label Text="{Binding CourseName}"
+                                   Grid.Column="1"
+                                   MaxLines="2"
+                                   LineBreakMode="TailTruncation"
+                                   d:Text="Lengthy Course Name can be in multiple line"
+                                   Grid.ColumnSpan="2" />
+                            <Label Text="{Binding CourseCredit}"
+                                   d:Text="3.00"
+                                   HorizontalOptions="Center"
+                                   FontSize="Small"
+                                   Grid.Column="3"
+                                   FontAttributes="Bold" />
+                        </Grid>
+                    </DataTemplate>
+                </controls:StackListLayout.ItemTemplate>
+            </controls:StackListLayout>
+        </StackLayout>
+    </Frame>
+</ContentView>

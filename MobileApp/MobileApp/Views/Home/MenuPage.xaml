@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Title="IIT"
+             xmlns:controls="clr-namespace:MobileApp.Controls"
+             xmlns:vm="clr-namespace:Mobile.Core.ViewModels;assembly=Mobile.Core"
+             xmlns:helpers="clr-namespace:MobileApp.Helpers"
+             xmlns:converters="clr-namespace:MobileApp.Converters"
+             x:Class="MobileApp.Views.Home.MenuPage">
+    <ContentPage.Resources>
+        <converters:IconTypeConverter x:Key="IconConverter" />
+    </ContentPage.Resources>
+    <Grid d:BindingContext="{x:Static vm:MainViewModel}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <ListView helpers:CommandListView.ItemTappedCommand="{Binding FlyoutCommand}"
+                  SeparatorVisibility="None"
+                  HasUnevenRows="True"
+                  BackgroundColor="White"
+                  ItemsSource="{Binding MenuItems}">
+            <d:ListView.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>Page 1</x:String>
+                    <x:String>Page 2</x:String>
+                    <x:String>Page 3</x:String>
+                    <x:String>Page 4</x:String>
+                    <x:String>Page 5</x:String>
+                </x:Array>
+            </d:ListView.ItemsSource>
+            <ListView.Header>
+                <Grid BackgroundColor="White"
+                      HeightRequest="180">
+                    <Image Source="front_bg.jpg"
+                           Aspect="AspectFill" />
+                    <BoxView BackgroundColor="Black"
+                             Opacity="0.6" />
+                    <Grid Margin="3"
+                                 VerticalOptions="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Frame CornerRadius="35"
+                               HeightRequest="70"
+                               Padding="0"
+                               WidthRequest="70"
+                               VerticalOptions="Center"
+                               IsClippedToBounds="True"
+                               HorizontalOptions="Center">
+                            <Image Source="iitlogo.png"
+                                   Margin="6"
+                                   Aspect="AspectFit" />
+                        </Frame>
+                        <Label Text="Institute of Information and Technology"
+                               FontSize="Medium"
+                               TextColor="White"
+                               Margin="3"
+                               Grid.Column="1"
+                               HorizontalTextAlignment="Center"
+                               FontAttributes="Bold"
+                               VerticalOptions="Center" />
+                    </Grid>
+                </Grid>
+            </ListView.Header>
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="vm:MenuItem">
+                    <ViewCell>
+                        <StackLayout Padding="15,10"
+                                     Margin="5"
+                                     Orientation="Horizontal"
+                                     HorizontalOptions="FillAndExpand">
+                            <Image Source="{Binding Icon, Converter={StaticResource IconConverter}}" />
+                            <Label VerticalOptions="FillAndExpand"
+                                   VerticalTextAlignment="Center"
+                                   Text="{Binding Title}"
+                                   d:Text="{Binding .}"
+                                   FontSize="Medium" />
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Grid Grid.Row="1">
+            <Button ImageSource="{controls:IconFont IconType=People, Color=DarkBlue}" 
+                    Command="{Binding StudentsCommand}"
+                    BackgroundColor="WhiteSmoke"/>
+            <Button ImageSource="{controls:IconFont IconType=ExitToApp, Color=Maroon}"
+                    Grid.Column="1"
+                    Command="{Binding LogoutCommand}"
+                    BackgroundColor="WhiteSmoke" />
+        </Grid>
+    </Grid>
+   
+</ContentPage>

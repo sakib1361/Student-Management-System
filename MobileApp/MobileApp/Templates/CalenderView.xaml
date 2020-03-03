@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             xmlns:controls="clr-namespace:MobileApp.Controls"
+             xmlns:local="clr-namespace:MobileApp.Templates"
+             x:Class="MobileApp.Templates.CalenderView">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackLayout Orientation="Horizontal"
+                     HorizontalOptions="Center"
+                     VerticalOptions="Start">
+            <StackLayout.Resources>
+                <Style TargetType="Label">
+                    <Setter Property="FontSize"
+                            Value="Large" />
+                    <Setter Property="VerticalOptions"
+                            Value="Center" />
+                    <Setter Property="TextColor"
+                            Value="DarkCyan" />
+                </Style>
+            </StackLayout.Resources>
+            <Button  Visual="Default"
+                     Clicked="ListView_LeftSwiped"
+                     BackgroundColor="Transparent"
+                     ImageSource="{controls:IconFont Color=DarkCyan, IconType=ArrowBack}"
+                     Style="{StaticResource FloatingButton}" />
+            <Label x:Name="MonthText" />
+            <Label Text="," />
+            <Label x:Name="YearText" />
+            <Button BackgroundColor="Transparent"
+                    Visual="Default"
+                    Clicked="ListView_RightSwiped"
+                    ImageSource="{controls:IconFont Color=DarkCyan, IconType=ArrowForward}"
+                    Style="{StaticResource FloatingButton}" />
+        </StackLayout>
+        <Grid Grid.Row="1">
+            <Grid.Resources>
+                <Style TargetType="Label">
+                    <Setter Property="VerticalOptions"
+                            Value="Center" />
+                    <Setter Property="HorizontalOptions"
+                            Value="Center" />
+                    <Setter Property="FontAttributes"
+                            Value="Bold" />
+                </Style>
+            </Grid.Resources>
+            <Label Text="Sat" />
+            <Label Text="Sun"
+                   Grid.Column="1" />
+            <Label Text="Mon"
+                   Grid.Column="2" />
+            <Label Text="Tue"
+                   Grid.Column="3" />
+            <Label Text="Wed"
+                   Grid.Column="4" />
+            <Label Text="Thu"
+                   Grid.Column="5" />
+            <Label Text="Fri"
+                   Grid.Column="6" />
+        </Grid>
+        <CollectionView x:Name="CalenderGrid"
+                        Grid.Row="2"
+                        InputTransparent="False"
+                        HeightRequest="260">
+            <d:CollectionView.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>1</x:String>
+                    <x:String>2</x:String>
+                    <x:String>3</x:String>
+                    <x:String>4</x:String>
+                    <x:String>5</x:String>
+                    <x:String>6</x:String>
+                    <x:String>7</x:String>
+                    <x:String>8</x:String>
+                    <x:String>9</x:String>
+                    <x:String>10</x:String>
+                </x:Array>
+            </d:CollectionView.ItemsSource>
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical"
+                                 Span="7" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="local:DayItem">
+                    <Grid Margin="0,3">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="Date_Selected" />
+                            <SwipeGestureRecognizer Swiped="ListView_RightSwiped"
+                                                    Direction="Right" />
+                            <SwipeGestureRecognizer Swiped="ListView_LeftSwiped"
+                                                    Direction="Left" />
+                        </Grid.GestureRecognizers>
+                        <BoxView HeightRequest="42"
+                                 WidthRequest="42"
+                                 VerticalOptions="Center"
+                                 HorizontalOptions="Center"
+                                 CornerRadius="21"
+                                 BackgroundColor="{Binding BorderColor}" />
+                        <BoxView HeightRequest="40"
+                                 WidthRequest="40"
+                                 VerticalOptions="Center"
+                                 HorizontalOptions="Center"
+                                 CornerRadius="20"
+                                 BackgroundColor="{Binding BackgroundColor}" />
+                        <Label d:Text="{Binding}"
+                               Text="{Binding Day}"
+                               FontSize="Medium"
+                               TextColor="{Binding ForegroundColor}"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                        <BoxView HeightRequest="6"
+                                 WidthRequest="6"
+                                 CornerRadius="3"
+                                 Margin="6"
+                                 VerticalOptions="End"
+                                 HorizontalOptions="Center"
+                                 BackgroundColor="{Binding HasItemColor}" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+        <Grid Grid.Row="3"
+              BackgroundColor="WhiteSmoke"
+              x:Name="ListContainer">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Label d:Text="Sample Data"
+                   FontSize="Medium"
+                   Margin="5,0"
+                   VerticalOptions="Center"
+                   HorizontalOptions="Start"
+                   x:Name="SelectedDateText"
+                   TextColor="DarkCyan" />
+            <Button Style="{StaticResource ActionMenuButton}"
+                    HorizontalOptions="End"
+                    VerticalOptions="Center"
+                    Margin="5,0"
+                    x:Name="ArrowUp"
+                    Clicked="ArrowUp_Clicked"
+                    ImageSource="{controls:IconFont IconType=ArrowDropUp, Color=Gray}" />
+            <Button Style="{StaticResource ActionMenuButton}"
+                    HorizontalOptions="End"
+                    VerticalOptions="Center"
+                    Margin="5,0"
+                    IsVisible="False"
+                    x:Name="ArrowDown"
+                    Clicked="ArrowDown_Clicked"
+                    ImageSource="{controls:IconFont IconType=ArrowDropDown, Color=Gray}" />
+            <ListView x:Name="MainContainer"
+                      Grid.Row="1"
+                      HasUnevenRows="True"
+                      SelectionMode="None" />
+        </Grid>
+    </Grid>
+</ContentView>

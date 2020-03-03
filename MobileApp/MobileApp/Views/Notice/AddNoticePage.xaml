@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:CustomPage xmlns="http://xamarin.com/schemas/2014/forms"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     mc:Ignorable="d"
+                     Title="Create Event"
+                     xmlns:pk="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
+                     xmlns:controls="clr-namespace:MobileApp.Controls"
+                     x:DataType="vm:AddUpdateNoticeViewModel"
+                     x:TypeArguments="vm:AddUpdateNoticeViewModel"
+                     xmlns:models="clr-namespace:CoreEngine.Model.DBModel;assembly=CoreEngine"
+                     xmlns:vm="clr-namespace:Mobile.Core.ViewModels;assembly=Mobile.Core"
+                     x:Class="MobileApp.Views.Notice.AddNoticePage">
+    <Grid d:BindingContext="{x:Static vm:AddUpdateNoticeViewModel}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <pk:PancakeView BackgroundGradientStartColor="DarkBlue"
+                        BackgroundGradientEndColor="LightBlue"
+                        VerticalOptions="Start"
+                        HeightRequest="200"/>
+        <ScrollView>
+            <StackLayout>
+                <Frame Margin="10,5">
+                    <StackLayout>
+                        <Entry Text="{Binding CurrentNotice.Title}"
+                               Placeholder="Title"
+                               Visual="Default" />
+                        <Editor Text="{Binding CurrentNotice.Message}"
+                                Placeholder="Message"
+                                HeightRequest="200"
+                                Visual="Default"
+                                BackgroundColor="Transparent" />
+                    </StackLayout>
+                </Frame>
+                <Frame Margin="10,5">
+                    <StackLayout>
+                        <Picker ItemsSource="{Binding PostTypes}"
+                                BackgroundColor="Transparent"
+                                Title="Post Type"
+                                SelectedItem="{Binding CurrentPost}" />
+                        <StackLayout Orientation="Horizontal">
+                            <CheckBox IsChecked="{Binding HasCourse}"
+                                      Color="Blue"
+                                      VerticalOptions="Center" />
+                            <Label Text="Cource Notification"
+                                   VerticalOptions="Center" />
+                        </StackLayout>
+                        <Picker ItemsSource="{Binding Courses}"
+                                Title="Course Name"
+                                BackgroundColor="Transparent"
+                                IsVisible="{Binding HasCourse}"
+                                SelectedItem="{Binding CurrentCourse}"
+                                ItemDisplayBinding="{Binding CourseName}" />
+                    </StackLayout>
+                </Frame>
+                <Frame Margin="10,5">
+                    <StackLayout>
+                        <Grid RowSpacing="0"
+                              ColumnSpacing="20">
+                            <Label Text="Event Date"
+                                   Margin="5,0"
+                                   VerticalOptions="Center" />
+                            <DatePicker Date="{Binding CurrentNotice.EventDate}"
+                                        Grid.Row="1"
+                                        Visual="Default"
+                                        VerticalOptions="Center"
+                                        BackgroundColor="Transparent" />
+                            <Label Text="Event Time"
+                                   Grid.Column="1"
+                                   Margin="5,0"
+                                   VerticalOptions="Center" />
+                            <TimePicker Time="{Binding EventTime}"
+                                        Grid.Row="1"
+                                        Grid.Column="1"
+                                        Visual="Default"
+                                        VerticalOptions="Center"
+                                        BackgroundColor="Transparent" />
+                        </Grid>
+                       
+                        <StackLayout Orientation="Horizontal">
+                            <CheckBox IsChecked="{Binding CurrentNotice.FutureNotification}" />
+                            <Label Text="Remind Before EventDate"
+                                   VerticalOptions="Center" />
+                        </StackLayout>
+                    </StackLayout>
+                </Frame>
+                <Frame Margin="10,5">
+                    <StackLayout>
+                        <Grid>
+                            <Label Text="Files"
+                                   VerticalOptions="Center" />
+                            <Button HorizontalOptions="End"
+                                    Command="{Binding AddMaterialCommand}"
+                                    Style="{StaticResource ActionMenuButton}"
+                                    ImageSource="{controls:IconFont IconType=Add, Color=DarkBlue}" />
+                        </Grid>
+                        <controls:StackListLayout ItemsSource="{Binding DBFiles}">
+                            <controls:StackListLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:DBFile">
+                                    <Label Text="{Binding FileName}"
+                                           TextDecorations="Underline" />
+                                </DataTemplate>
+                            </controls:StackListLayout.ItemTemplate>
+                        </controls:StackListLayout>
+                    </StackLayout>
+                </Frame>
+            </StackLayout>
+        </ScrollView>
+        <Button Grid.Row="1"
+                Command="{Binding SaveCommand}" 
+                Text="Save"
+                Margin="0,0,0,5"
+                Style="{StaticResource SaveButton}"/>
+        <Grid Grid.RowSpan="2"
+              IsVisible="{Binding IsBusy}">
+            <BoxView BackgroundColor="Black"
+                     Opacity="0.3" />
+            <ActivityIndicator IsRunning="{Binding IsBusy}" />
+        </Grid>
+    </Grid>
+</controls:CustomPage>

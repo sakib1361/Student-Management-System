@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:CustomPage xmlns="http://xamarin.com/schemas/2014/forms"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     mc:Ignorable="d"
+                     Title="My Profile"
+                     xmlns:controls="clr-namespace:MobileApp.Controls"
+                     xmlns:vm="clr-namespace:Mobile.Core.ViewModels;assembly=Mobile.Core"
+                     x:DataType="vm:ProfileDetailViewModel"
+                     x:TypeArguments="vm:ProfileDetailViewModel"
+                     x:Class="MobileApp.Views.Profile.ProfilleDetailPage">
+    <ScrollView d:BindingContext="{x:Static vm:ProfileDetailViewModel}">
+        <StackLayout Spacing="0">
+            <Grid BackgroundColor="WhiteSmoke">
+                <Label Text="My Information"
+                       Padding="15,0"
+                       VerticalOptions="Center"
+                       FontSize="Medium" />
+                <Button HorizontalOptions="End"
+                        Text="Edit"
+                        TextColor="Blue"
+                        Visual="Default"
+                        BackgroundColor="WhiteSmoke"
+                        IsVisible="{Binding EditProfile, Converter={StaticResource BoolInverter}}"
+                        Command="{Binding AllowProfileEditCommand}" />
+                <Button HorizontalOptions="End"
+                        Text="Save"
+                        TextColor="Blue"
+                        Visual="Default"
+                        BackgroundColor="WhiteSmoke"
+                        IsVisible="{Binding EditProfile}"
+                        Command="{Binding EditProfileCommand}" />
+            </Grid>
+            <Frame Margin="10,0,10,0">
+                <StackLayout IsEnabled="{Binding EditProfile}">
+                    <Label Text="{Binding CurrentUser.Name}"
+                           FontSize="Medium" />
+                    <Label Text="{Binding CurrentUser.Roll}"
+                           FontSize="Small" />
+                    <BoxView HeightRequest="10" />
+                    <Entry Text="{Binding CurrentUser.PhoneNumber}"
+                           Placeholder="Phone Number" />
+                    <Entry Text="{Binding CurrentUser.Occupation}"
+                           Placeholder="Occupation" />
+                    <Entry Text="{Binding CurrentUser.BloodGroup}"
+                           Placeholder="Blood Group" />
+                    <Editor Text="{Binding CurrentUser.Address}"
+                            Placeholder="Address"
+                            HeightRequest="150"
+                            BackgroundColor="Transparent" />
+                    <Editor Text="{Binding CurrentUser.WorkHistory}"
+                            Placeholder="Work Information"
+                            BackgroundColor="Transparent" />
+                </StackLayout>
+            </Frame>
+            <Grid BackgroundColor="WhiteSmoke"
+                  Margin="0,20,0,0">
+                <Label Text="Change Password"
+                       Margin="15,0"
+                       VerticalOptions="Center"
+                       FontSize="Medium" />
+                <Button HorizontalOptions="End"
+                        Text="Edit"
+                        TextColor="Blue"
+                        Visual="Default"
+                        IsVisible="{Binding EditPassword, Converter={StaticResource BoolInverter}}"
+                        BackgroundColor="WhiteSmoke"
+                        Command="{Binding AllowPasswordEditCommand}" />
+                <Button HorizontalOptions="End"
+                        Text="Save"
+                        TextColor="Blue"
+                        Visual="Default"
+                        IsVisible="{Binding EditPassword}"
+                        BackgroundColor="WhiteSmoke"
+                        Command="{Binding EditPasswordCommand}" />
+            </Grid>
+            <Frame Margin="10,0,10,40">
+                <StackLayout IsEnabled="{Binding EditPassword}">
+                    <Entry Text="{Binding CurrentPassword}"
+                           IsPassword="True"
+                           Placeholder="Current Password" />
+                    <Entry Text="{Binding NewPassword}"
+                           IsPassword="True"
+                           Placeholder="New Password" />
+                    <Entry Text="{Binding ConfirmPassword}"
+                           IsPassword="True"
+                           Placeholder="ConfirmPassword" />
+                </StackLayout>
+            </Frame>
+        </StackLayout>
+    </ScrollView>
+</controls:CustomPage>

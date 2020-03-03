@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>614586035492-705c7jmn4a0bt45cceakoekjjvn8tqp6.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.614586035492-705c7jmn4a0bt45cceakoekjjvn8tqp6</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>614586035492-norj3hbglc2s6jnu0i36pnc5i6ofg33h.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDp7yz722o5Vfi_VVa58jrO2uZZyRdswo0</string>
+	<key>GCM_SENDER_ID</key>
+	<string>614586035492</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.du.iit</string>
+	<key>PROJECT_ID</key>
+	<string>iit-student</string>
+	<key>STORAGE_BUCKET</key>
+	<string>iit-student.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:614586035492:ios:5e76fcca4d2233da7217b1</string>
+	<key>DATABASE_URL</key>
+	<string>https://iit-student.firebaseio.com</string>
+</dict>
+</plist>

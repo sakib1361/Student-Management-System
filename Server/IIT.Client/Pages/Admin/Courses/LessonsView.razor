@@ -1,0 +1,147 @@
+﻿@inject ILessonHandler _lessonService
+@inject IMatToaster _matToaster
+<div class="card m-3">
+    <div class="card-header">
+        <h4 class="d-inline float-left">Lessons</h4>
+        <MatFAB Mini="true"
+                Class="d-inline-flex float-right"
+                OnClick="(() => addLessonDialog = true)"
+                Icon="@MatIconNames.Add" />
+    </div>
+    <div class="card-body">
+        @if (LessonSpinner)
+        {
+            <MatProgressBar Indeterminate="true"/>
+        }
+        <MatTable Items="Lessons"
+                  PageSize="100"
+                  Style="width: 100%;"
+                  ShowPaging="false"
+                  AllowSelection="false">
+
+            <MatTableHeader>
+                <th style="width:65%">Teacher</th>
+                <th style="width:15%">Day</th>
+                <th style="width:15%">Time</th>
+                <th style="width:10%">Room</th>
+                @*<th style="width:20%"></th>*@
+            </MatTableHeader>
+            <MatTableRow Context="Lesson">
+                <td>@Lesson.TeacherName</td>
+                <td>@Lesson.DayOfWeek</td>
+                <td>@Lesson.TimeOfDay</td>
+                <td>@Lesson.RoomNo</td>
+                @*<td>
+                    <span class="text-center">
+                        <MatButton Icon="@MatIconNames.Edit" />
+                        <MatButton Icon="@MatIconNames.Delete" />
+                    </span>
+                </td>*@
+            </MatTableRow>
+        </MatTable>
+    </div>
+</div>
+<MatDialog @bind-IsOpen="@addLessonDialog">
+    <MatDialogTitle>Create Batch</MatDialogTitle>
+    <MatDialogContent>
+        <EditForm OnValidSubmit="@AddLesson" Model="@newLesson">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <fieldset>
+                <div class="form-group">
+                    <MatTextField Label="Time"
+                                  FullWidth="true"
+                                  IconTrailing="true"
+                                  Icon="@MatIconNames.Timer"
+                                  @bind-Value="TimeProxy" />
+
+                </div>
+                <div class="form-group">
+                    <MatSelect Label="Day Of Week"
+                               @bind-Value="@SelectedWeekDay">
+                        @foreach (var item in WeekDays)
+                        {
+                            <MatOption Value="item">@item</MatOption>
+                        }
+                    </MatSelect>
+                </div>
+                <div class="form-group">
+                    <MatTextField @bind-Value="@newLesson.TeacherName"
+                                  Label="Teacher Name"
+                                  Required="true" />
+                    <MatTextField @bind-Value="@newLesson.RoomNo"
+                                  Label="Room No Number" />
+                </div>
+                <div class="form-group">
+                    <MatTextField @bind-Value="@newLesson.Description"
+                                  Label="Description"
+                                  Icon="@MatIconNames.Email"
+                                  IconTrailing="true"
+                                  FullWidth="true" />
+                </div>
+            </fieldset>
+        </EditForm>
+    </MatDialogContent>
+    <MatDialogActions>
+        <MatButton OnClick="@(e => { addLessonDialog = false; })">Cancel</MatButton>
+        <MatButton OnClick="AddLesson">Add Lesson</MatButton>
+    </MatDialogActions>
+</MatDialog>
+@code
+{
+    [Parameter]
+    public List<Lesson> Lessons { get; set; }
+    [Parameter]
+    public Course CurrenntCourse { get; set; }
+    bool LessonSpinner { get; set; }
+
+    private string[] WeekDays = Enum.GetNames(typeof(DayOfWeek));
+    Lesson newLesson = new Lesson();
+    bool addLessonDialog;
+    string TimeProxy
+    {
+        get => newLesson.TimeOfDay.ToString();
+        set
+        {
+            TimeSpan.TryParse(value, out TimeSpan time);
+            newLesson.TimeOfDay = time;
+        }
+    }
+    string SelectedWeekDay
+    {
+        get => newLesson.DayOfWeek.ToString();
+        set
+        {
+            Enum.TryParse(value, out DayOfWeek info);
+            newLesson.DayOfWeek = info;
+
+        }
+    }
+
+    private async void AddLesson()
+    {
+        addLessonDialog = false;
+        LessonSpinner = true;
+        var resp = await _lessonService.AddLesson(CurrenntCourse.Id, newLesson);
+        LessonSpinner = false;
+        if(resp == null)
+        {
+            _matToaster.Add("Failed to create Lesson", MatToastType.Danger);
+        }
+        else
+        {
+            var toast = resp.Actionstatus ? MatToastType.Success : MatToastType.Danger;
+            _matToaster.Add(resp.Message, toast);
+            if (resp.Actionstatus)
+            {
+                var allLesson = await _lessonService.GetCourseLessons(CurrenntCourse.Id);
+
+                if (allLesson != null)
+                {
+                    Lessons = allLesson;
+                    this.StateHasChanged();
+                }
+            }
+        }
+    }
+}

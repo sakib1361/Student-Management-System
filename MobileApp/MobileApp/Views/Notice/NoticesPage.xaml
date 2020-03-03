@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:CustomTabPage xmlns="http://xamarin.com/schemas/2014/forms"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                        xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                        mc:Ignorable="d"
+                        Title="Notices"
+                        xmlns:pk="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
+                        xmlns:model="clr-namespace:CoreEngine.Model.DBModel;assembly=CoreEngine"
+                        xmlns:controls="clr-namespace:MobileApp.Controls"
+                        xmlns:vm="clr-namespace:Mobile.Core.ViewModels;assembly=Mobile.Core"
+                        x:DataType="vm:NoticesViewModel"
+                        x:TypeArguments="vm:NoticesViewModel"
+                        xmlns:template="clr-namespace:MobileApp.Templates"
+                        xmlns:converters="clr-namespace:MobileApp.Converters"
+                        x:Class="MobileApp.Views.Notice.NoticesPage">
+    <TabbedPage.ToolbarItems>
+        <ToolbarItem IconImageSource="{controls:IconFont IconType=Add}"
+                     Order="Primary"
+                     Command="{Binding AddCommand}"
+                     Priority="0" />
+    </TabbedPage.ToolbarItems>
+    <controls:CustomTabPage.Resources>
+        <DataTemplate x:DataType="model:Notice"
+                      x:Key="NoticeTemplate">
+            <template:NoticeView />
+        </DataTemplate>
+    </controls:CustomTabPage.Resources>
+    <ContentPage  x:DataType="vm:NoticesViewModel"
+                  Title="Upcoming"
+                  IconImageSource="{controls:IconFont IconType=RecentActors}">
+        <Grid d:BindingContext="{x:Static vm:NoticesViewModel}">
+            <pk:PancakeView HeightRequest="200"
+                            VerticalOptions="Start"
+                            BackgroundGradientStartColor="DarkBlue"
+                            BackgroundGradientEndColor="LightBlue" />
+            <CollectionView ItemsSource="{Binding UpcomingNotices}"
+                            SelectionChangedCommand="{Binding NoticeCommand}"
+                            SelectionMode="None"
+                            ItemTemplate="{StaticResource NoticeTemplate}">
+                <CollectionView.EmptyView>
+                    <Grid>
+                        <Frame Margin="10,0">
+                            <Label Text="No Upcoming Notices for the next 7 days"
+                                   FontSize="Medium"
+                                   HorizontalOptions="Center" />
+                        </Frame>
+                    </Grid>
+                </CollectionView.EmptyView>
+            </CollectionView>
+        </Grid>
+    </ContentPage>
+    <ContentPage  x:DataType="vm:NoticesViewModel"
+                  Title="All"
+                  Appearing="ContentPage_Appearing"
+                  IconImageSource="{controls:IconFont IconType=Notifications}">
+        <Grid d:BindingContext="{x:Static vm:NoticesViewModel}">
+            <pk:PancakeView HeightRequest="200"
+                            VerticalOptions="Start"
+                            BackgroundGradientStartColor="DarkBlue"
+                            BackgroundGradientEndColor="LightBlue" />
+            <RefreshView Command="{Binding RefreshCommand}"
+                         x:Name="AllNoticeController"
+                         IsRefreshing="{Binding IsRefreshisng}">
+                <CollectionView ItemsSource="{Binding Notices}"
+                                SelectionChangedCommand="{Binding NoticeCommand}"
+                                RemainingItemsThreshold="3"
+                                ItemTemplate="{StaticResource NoticeTemplate}"
+                                RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}"
+                                SelectionMode="None">
+                    <CollectionView.EmptyView>
+                        <Grid>
+                            <Frame Margin="10,0">
+                                <Label Text="No available Notices"
+                                       FontSize="Medium"
+                                       HorizontalOptions="Center" />
+                            </Frame>
+                        </Grid>
+                    </CollectionView.EmptyView>
+                </CollectionView>
+            </RefreshView>
+        </Grid>
+    </ContentPage>
+</controls:CustomTabPage>

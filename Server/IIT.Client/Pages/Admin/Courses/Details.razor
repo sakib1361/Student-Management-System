@@ -1,0 +1,194 @@
+﻿@page "/admin/courses/details/{CourseId:int}"
+@using BlazorInputFile
+@inject ICourseHandler _courseHandler
+@inject ILessonHandler _lessonHandler
+@inject IMatToaster _matToaster
+@inject NavigationManager _navigation
+@if (CurrentCourse.Id == 0)
+{
+    <MatProgressBar Indeterminate="true" />
+}
+else
+{
+    <div class="card">
+        <div class="card-header">
+            <h3>
+                @CurrentCourse.CourseId
+            </h3>
+            <b>@CurrentCourse.CourseName</b>
+        </div>
+        <div class="card-body">
+            @CurrentCourse.Description
+        </div>
+    </div>
+    <MatDivider />
+    <LessonsView CurrenntCourse="CurrentCourse"
+                 Lessons="Lessons" />
+    <MatDivider />
+    <div class="card m-3">
+        <div class="card-header">
+            <h5 class="float-left">Course Materials</h5>
+            <MatFAB Mini="true"
+                    Class="input-file-custom float-right">
+                <span class="material-icons">add</span>
+                <InputFile multiple OnChange="AddMaterialClick" />
+            </MatFAB>
+        </div>
+        <div class="ml-3 mr-3">
+            @if (DBFiles != null)
+            {
+                foreach (var dbFile in DBFiles)
+                {
+                    <a href="/api/files/index?id=@dbFile.Id">@dbFile.FileName</a>
+                    <br />
+                }
+            }
+            else
+            {
+                <h6 class="text-center">No Course material has been added yet</h6>
+            }
+        </div>
+        
+    </div>
+    <MatDivider />
+    <div class="card m-3">
+        <div class="card-header">
+            <h4 class="d-inline float-left">
+                Students
+            </h4>
+            <MatButton Label="Upload Result"
+                       Class="input-file-custom float-right">
+                <InputFile OnChange="AddResultUploadClick" />
+            </MatButton>
+        </div>
+        <div class="card-body">
+            <MatTable Class="mat-elevation-z5" Items="@StudentCourses"
+                      ShowPaging="false"
+                      PageSize="100"
+                      AllowSelection="true">
+                <MatTableHeader>
+                    <th style="width:100%">Name</th>
+                    <th style="width:15%">Roll</th>
+                    <th style="width:20%">Credit</th>
+                    <th style="width:15%">GPA</th>
+                    <th style="width:10%">Grade</th>
+                    <th style="width:10%"></th>
+                </MatTableHeader>
+                <MatTableRow Context="StudentCourse">
+                    <td @onclick="(() => ViewStudent(StudentCourse.Student))">@StudentCourse.Student.Name</td>
+                    <td @onclick="(() => ViewStudent(StudentCourse.Student))">@StudentCourse.Student.Roll</td>
+                    <td @onclick="(() => ViewStudent(StudentCourse.Student))">@CurrentCourse.CourseCredit</td>
+                    <td @onclick="(() => ViewStudent(StudentCourse.Student))">@StudentCourse.GradePoint</td>
+                    <td @onclick="(() => ViewStudent(StudentCourse.Student))">@StudentCourse.Grade</td>
+                    <td>
+                        <MatButton Icon="@MatIconNames.Delete"/>
+                    </td>
+                </MatTableRow>
+            </MatTable>
+        </div>
+    </div>
+}
+@code{
+    [Parameter]
+    public int CourseId { get; set; }
+    Course CurrentCourse = new Course();
+    List<Lesson> Lessons = new List<Lesson>();
+    List<StudentCourse> StudentCourses;
+    List<DBFile> DBFiles;
+
+    protected override async Task OnInitializedAsync()
+    {
+        CurrentCourse = await _courseHandler.GetCourse(CourseId);
+        Lessons = CurrentCourse.Lessons.ToList();
+        StudentCourses = CurrentCourse.StudentCourses.ToList();
+        if (CurrentCourse.CourseMaterials.Count > 0)
+        {
+            DBFiles = CurrentCourse.CourseMaterials.OrderBy(x => x.FileName).ToList();
+        }
+    }
+
+    private void ViewStudent(DBUser user)
+    {
+        _navigation.NavigateTo("/admin/students/details/" + user.Id);
+    }
+
+    private async void UploadStudentResultClick(IFileListEntry[] files)
+    {
+        var file = files.FirstOrDefault();
+        if (file != null)
+        {
+            var dbFile = new DBFile(file.Data, file.Name);
+            var resp = await _courseHandler.UploadCourseResult(CourseId, dbFile, null);
+            if (resp != null && resp.Actionstatus)
+            {
+                _matToaster.Add("Uploaded Result Successfully", MatToastType.Success);
+                CurrentCourse = await _courseHandler.GetCourse(CourseId);
+                this.StateHasChanged();
+            }
+            else
+            {
+                _matToaster.Add("Faied to upload result", MatToastType.Danger);
+            }
+        }
+    }
+
+    private async void AddMaterialClick(IFileListEntry[] files)
+    {
+        if (files != null && files.Length > 0)
+        {
+            var dbFiles = new List<DBFile>();
+            foreach (var item in files)
+            {
+                dbFiles.Add(new DBFile(item.Data, item.Name));
+            }
+            var resp = await _courseHandler.AddMaterial(CurrentCourse.Id, dbFiles);
+            if (resp == null)
+            {
+                _matToaster.Add("Failed to upload Material", MatToastType.Danger);
+            }
+            else
+            {
+                var toast = resp.Actionstatus ? MatToastType.Success : MatToastType.Danger;
+                _matToaster.Add(resp.Message, toast);
+                if (resp.Actionstatus)
+                {
+                    var course = await _courseHandler.GetCourse(CourseId);
+                    if(course!= null)
+                    {
+                        DBFiles = course.CourseMaterials.OrderBy(x => x.FileName).ToList();
+                        this.StateHasChanged();
+                    }
+                }
+            }
+        }
+    }
+
+    private async void AddResultUploadClick(IFileListEntry[] files)
+    {
+        var file = files.FirstOrDefault();
+        if(file != null && file.Size > 0)
+        {
+            var dbFile = new DBFile(file.Data, file.Name);
+            var resp = await _courseHandler.UploadCourseResult(CurrentCourse.Id, dbFile, null);
+            if(resp == null)
+            {
+                _matToaster.Add("Failed to Upload result", MatToastType.Danger);
+            }
+            else
+            {
+                var toast = resp.Actionstatus ? MatToastType.Success : MatToastType.Danger;
+                _matToaster.Add(resp.Message, toast);
+                if (resp.Actionstatus)
+                {
+                    var data = await _courseHandler.GetCourse(CurrentCourse.Id);
+                    if(data!= null)
+                    {
+                        StudentCourses = data.StudentCourses.ToList();
+                        this.StateHasChanged();
+                    }
+                }
+            }
+        }
+    }
+}
+

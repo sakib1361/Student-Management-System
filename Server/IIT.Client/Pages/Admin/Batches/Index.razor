@@ -1,0 +1,190 @@
+﻿@page "/admin/batches/"
+@inject IMatToaster _matToaster
+@inject NavigationManager _nabigationManager
+@inject IBatchHandler _batchService
+
+<div class="card">
+    <div class="card-header">
+        <h4>Batches </h4>
+    </div>
+    <div class="card-body">
+        <MatTextField @bind-Value="@SearchText"
+                      Label="Search"
+                      Icon="@MatIconNames.Search"
+                      IconTrailing="true"
+                      FullWidth="true" />
+        @if (IsBusy)
+        {
+            <MatProgressBar Indeterminate="true" />
+        }
+        <MatTable Class="mat-elevation-z5"
+                  Items="@Batches"
+                  PageSize="50"
+                  AllowSelection="true">
+            <MatTableHeader>
+                <th style="width:40%">Name</th>
+                <th style="width:30%">Starts On</th>
+                <th style="width:30%">Ends On</th>
+                <th style="width:20%">Number of semesters</th>
+                <th style="width:20%">Semester Duration (months)</th>
+                <th>
+                    <div class="float-right" style="width:105px;">
+                        <MatFAB Icon="@MatIconNames.Add"
+                                Mini="true"
+                                OnClick="@((e) => AddBatchDialog())"
+                                Raised="true"></MatFAB>
+                    </div>
+                </th>
+            </MatTableHeader>
+            <MatTableRow Context="Batch">
+                <td @onclick="(() => ViewBatch(Batch))"> @Batch.Name</td>
+                <td @onclick="(() => ViewBatch(Batch))">@Batch.StartsOn.ToString("dd MMMM, yyyy")</td>
+                <td @onclick="(() => ViewBatch(Batch))">@Batch.EndsOn.ToString("dd MMMM, yyyy")</td>
+                <td @onclick="(() => ViewBatch(Batch))">@Batch.NumberOfSemester</td>
+                <td @onclick="(() => ViewBatch(Batch))">@Batch.SemesterDuration</td>
+                <td>
+                    <MatButton Icon="@MatIconNames.Edit"
+                               OnClick="@(() => EditBatch(Batch))" />
+                </td>
+            </MatTableRow>
+        </MatTable>
+    </div>
+</div>
+<MatDialog @bind-IsOpen="@addDialogOpen">
+    <MatDialogTitle>Create Batch</MatDialogTitle>
+    <MatDialogContent>
+        <EditForm Model="@CurrentBatch" OnValidSubmit="@CreateBatch">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <fieldset>
+                <div class="form-group">
+                    <MatTextField @bind-Value="@CurrentBatch.Name"
+                                  Label="Batch Name"
+                                  Icon="@MatIconNames.People"
+                                  IconTrailing="true"
+                                  FullWidth="true"
+                                  Required="true" />
+                </div>
+                <div class="form-group">
+                    @if (CurrentBatch.Id == 0)
+                    {
+                    <MatNumericUpDownField @bind-Value="@CurrentBatch.NumberOfSemester"
+                                           Label="Number of Semester"
+                                           Minimum="1" />
+                    }
+                    <MatNumericUpDownField @bind-Value="@CurrentBatch.SemesterDuration"
+                                           Label="Semester Duration (Months)"
+                                           Minimum="1" />
+                </div>
+                <div class="form-group">
+                    <MatBlazor.MatDatePicker @bind-Value="@CurrentTime"
+                                             Label="Starts On" />
+                </div>
+            </fieldset>
+        </EditForm>
+    </MatDialogContent>
+    <MatDialogActions>
+        <MatButton OnClick="@(e => { addDialogOpen = false; })">Cancel</MatButton>
+        <MatButton OnClick="@CreateBatch"
+                   Label="@GetEditState()" />
+    </MatDialogActions>
+</MatDialog>
+@code
+{
+    private List<Batch> Batches;
+    private int TotalBatch;
+    private bool addDialogOpen;
+    public Batch CurrentBatch { get; set; } = new Batch();
+    public DateTime CurrentTime
+    {
+        get => CurrentBatch.StartsOn;
+        set => CurrentBatch.StartsOn = value.AddHours(6);
+    }
+    bool IsBusy;
+    string _search = string.Empty;
+    public string SearchText
+    {
+        get => _search;
+        set => SearchBatch(value);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsBusy = true;
+        Batches = await _batchService.GetBatches(1);
+        IsBusy = false;
+        if (Batches == null || Batches.Count == 0)
+        {
+            _matToaster.Add("No Batches found. Create New", MatBlazor.MatToastType.Danger);
+        }
+    }
+
+    private string GetEditState()
+    {
+        return CurrentBatch.Id == 0 ? "Create Batch" : "Update Batch";
+    }
+
+    private void AddBatchDialog()
+    {
+        CurrentBatch = new Batch();
+        addDialogOpen = true;
+    }
+
+    private async void CreateBatch()
+    {
+        addDialogOpen = false;
+        if (CurrentBatch.Id == 0)
+        {
+            var res = await _batchService.CreateBatch(CurrentBatch);
+            var toast = res.Actionstatus ? MatToastType.Success : MatToastType.Danger;
+            _matToaster.Add(res.Message, toast);
+            Console.WriteLine(res.Data);
+            if (res.Actionstatus && int.TryParse(res.Data.ToString(), out int batchId))
+            {
+                CurrentBatch.Id = batchId;
+                Batches.Insert(0, CurrentBatch);
+                this.StateHasChanged();
+            }
+        }
+        else
+        {
+            var response = await _batchService.UpdateBatch(CurrentBatch);
+            var toastType = response.Actionstatus ? MatToastType.Success : MatToastType.Danger;
+            _matToaster.Add(response.Message, toastType);
+        }
+    }
+
+    private void EditBatchDialog(Batch batch)
+    {
+        CurrentBatch = batch;
+        addDialogOpen = true;
+    }
+
+    private void ViewBatch(Batch batch)
+    {
+        _nabigationManager.NavigateTo("/admin/batches/details/" + batch.Id.ToString());
+    }
+
+    private void EditBatch(Batch batch)
+    {
+        CurrentBatch = batch;
+        addDialogOpen = true;
+        this.StateHasChanged();
+    }
+
+    private async void SearchBatch(string key)
+    {
+        _search = key;
+        IsBusy = true;
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            Batches = await _batchService.GetBatches(1);
+        }
+        else
+        {
+            Batches = await _batchService.SearchBatch(key);
+        }
+        IsBusy = false;
+        this.StateHasChanged();
+    }
+}

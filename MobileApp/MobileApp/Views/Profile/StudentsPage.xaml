@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:CustomPage xmlns="http://xamarin.com/schemas/2014/forms"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     mc:Ignorable="d"
+                     Title="Current Students"
+                     xmlns:model="clr-namespace:CoreEngine.Model.DBModel;assembly=CoreEngine"
+                     xmlns:vm="clr-namespace:Mobile.Core.ViewModels;assembly=Mobile.Core"
+                     x:DataType="vm:StudentsViewModel"
+                     x:TypeArguments="vm:StudentsViewModel"
+                     xmlns:controls="clr-namespace:MobileApp.Controls"
+                     x:Class="MobileApp.Views.Profile.StudentsPage">
+    <Grid d:BindingContext="{x:Static vm:StudentsViewModel}">
+        <CollectionView ItemsSource="{Binding CurrentStudents}">
+            <d:CollectionView.ItemsSource>
+                <x:Array Type="{x:Type x:String}">
+                    <x:String>Semester 1</x:String>
+                    <x:String>Semester 2</x:String>
+                    <x:String>Semester 3</x:String>
+                    <x:String>Semester 4</x:String>
+                    <x:String>Semester 5</x:String>
+                </x:Array>
+            </d:CollectionView.ItemsSource>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="model:DBUser">
+                    <Grid>
+                        <Frame Margin="10,5"
+                               Padding="10">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Frame HeightRequest="40"
+                                       WidthRequest="40"
+                                       CornerRadius="20"
+                                       Padding="0"
+                                       Margin="0"
+                                       BorderColor="LightGray"
+                                       IsClippedToBounds="True"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center">
+                                    <Image Source="{Binding Name, Converter={StaticResource IdenticonConverter}}"
+                                           d:Source="iitlogo.png"
+                                           Margin="8"
+                                           Aspect="AspectFit"/>
+                                </Frame>
+                                <StackLayout Grid.Column="1"
+                                             Spacing="0"
+                                             VerticalOptions="Center">
+                                    <Label Text="{Binding Name}" 
+                                           FontAttributes="Bold"
+                                           TextColor="DarkBlue"
+                                           FontSize="Medium"
+                                           d:Text="Full Name"/>
+                                    <Label Text="{Binding Roll}" 
+                                           FontSize="Small"
+                                           d:Text="180000"/>
+                                </StackLayout>
+                            </Grid>
+                        </Frame>
+                    </Grid>
+                    
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</controls:CustomPage>

@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:CustomPage xmlns="http://xamarin.com/schemas/2014/forms"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     mc:Ignorable="d"
+                     xmlns:vm="clr-namespace:Mobile.Core.ViewModels;assembly=Mobile.Core"
+                     x:TypeArguments="vm:EditorViewModel"
+                     x:DataType="vm:EditorViewModel"
+                     xmlns:controls="clr-namespace:MobileApp.Controls"
+                     x:Class="MobileApp.Views.Media.EditorPage">
+    <Grid d:BindingContext="{x:Static vm:EditorViewModel}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid>
+            <Frame Margin="10">
+                <Editor Visual="Default"
+                        Placeholder="Edit Text"
+                        Text="{Binding Data}" />
+            </Frame>
+        </Grid>
+       
+        <Button Style="{StaticResource SaveButton}"
+                Text="Done"
+                Grid.Row="1"
+                Command="{Binding CloseCommand}" />
+    </Grid>
+</controls:CustomPage>

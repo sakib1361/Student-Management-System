@@ -1,0 +1,130 @@
+﻿@page "/admin/students/details/{StudentId}"
+@inject NavigationManager _navigationManager
+@inject IMemberHandler _memberService
+@inject ICourseHandler _courseService
+@inject IMatToaster _matToaster
+@if (Student == null)
+{
+    <MatProgressBar Indeterminate="true" />
+}
+else
+{
+    <div class="card">
+        <div class="card-header">
+            <div class="float-left">
+                <h4>@Student.Name</h4>
+                <p>@Student.Roll</p>
+            </div>
+            <div class="float-right">
+                @if (Student.ClassRepresentative)
+                {
+                    <MatButton Label="Remove CR"
+                               Class="btn-danger"
+                               OnClick="(()=>MakeCR(false))" />
+                }
+                else
+                {
+                    <MatButton Label="Make CR"
+                               OnClick="(()=>MakeCR(true))" />
+                }
+            </div>
+        </div>
+        <div class="card-body">
+
+            @if (Semesters != null && Semesters.Count > 0)
+            {
+                <h5>Attended Course</h5>
+                foreach (var semester in Semesters)
+                {
+                    <h5>@semester.Name</h5>
+                    <p>Starts @semester.StartsOn.ToShortDateString()</p>
+                    <MatTable Items="semester.Courses"
+                              ShowPaging="false"
+                              AllowSelection="true">
+                        <MatTableHeader>
+                            <th style="width:100%">Course Name</th>
+                            <th style="width:20%">Course ID</th>
+                            <th style="width:20%">Course Credit</th>
+                        </MatTableHeader>
+                        <MatTableRow Context="Course">
+                            <td @onclick="(() => ViewCourse(Course.Id))">@Course.CourseName</td>
+                            <td @onclick="(() => ViewCourse(Course.Id))">@Course.CourseId</td>
+                            <td @onclick="(() =>  ViewCourse(Course.Id))">@Course.CourseCredit</td>
+
+                        </MatTableRow>
+                    </MatTable>
+                }
+            }
+            <br />
+
+            @if (SemesterDatas != null && SemesterDatas.Count > 0)
+            {<h5>Published Result</h5>
+                foreach (var semester in SemesterDatas)
+                {
+                    <h5>@semester.SemesterName</h5>
+                    <p>Starts @semester.StartsOn.ToShortDateString()</p>
+                    <MatTable Items="semester.CourseDatas"
+                              ShowPaging="false"
+                              AllowSelection="true">
+                        <MatTableHeader>
+                            <th style="width:40%">Course Name</th>
+                            <th style="width:20%">Course ID</th>
+                            <th style="width:20%">Course Credit</th>
+                            <th style="width:20%">Grade</th>
+                            <th style="width:20%">GPA</th>
+                        </MatTableHeader>
+                        <MatTableRow Context="Course">
+                            <td @onclick="(() => ViewCourse(Course.Id))">@Course.Name</td>
+                            <td @onclick="(() => ViewCourse(Course.Id))">@Course.CourseId</td>
+                            <td @onclick="(() =>  ViewCourse(Course.Id))">@Course.CourseCredit</td>
+                            <td @onclick="(() =>  ViewCourse(Course.Id))">@Course.Grade</td>
+                            <td @onclick="(() =>  ViewCourse(Course.Id))">@Course.GradePoint</td>
+                        </MatTableRow>
+                    </MatTable>
+                    <MatDivider />
+                    <h6 class="text-center">Total : @semester.SemesterGPA</h6>
+                }
+            }
+
+
+        </div>
+    </div>
+}
+@code {
+    [Parameter]
+    public string StudentId { get; set; }
+    DBUser Student;
+    List<SemesterData> SemesterDatas;
+    List<Semester> Semesters;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Student = await _memberService.GetUser(StudentId);
+        SemesterDatas = await _courseService.GetStudentResult(StudentId);
+        Semesters= await _courseService.GetCurrentSemesters(Student.Id);
+    }
+
+    private void ViewCourse(int courseId)
+    {
+        _navigationManager.NavigateTo("/admin/courses/details/" + courseId);
+    }
+
+    private async void MakeCR(bool isCR)
+    {
+        var resp = await _memberService.MakeCR(StudentId, isCR);
+        if(resp == null)
+        {
+            _matToaster.Add("Failed to Communicate with Server", MatToastType.Danger);
+        }
+        else
+        {
+            var toast = resp.Actionstatus ? MatToastType.Success : MatToastType.Danger;
+            _matToaster.Add(resp.Message, toast);
+            if (resp.Actionstatus)
+            {
+                Student.ClassRepresentative = isCR;
+                this.StateHasChanged();
+            }
+        }
+    }
+}

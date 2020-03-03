@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<controls:CustomPage xmlns="http://xamarin.com/schemas/2014/forms"
+                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                     xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                     mc:Ignorable="d"
+                     Title="Academic Calender"
+                     xmlns:vm="clr-namespace:Mobile.Core.ViewModels;assembly=Mobile.Core"
+                     x:TypeArguments="vm:CalenderViewModel"
+                     xmlns:controls="clr-namespace:MobileApp.Controls"
+                     xmlns:template="clr-namespace:MobileApp.Templates"
+                     xmlns:model="clr-namespace:CoreEngine.Model.DBModel;assembly=CoreEngine"
+                     x:Class="MobileApp.Views.Bulletin.CalenderPage">
+    <Grid d:BindingContext="{x:Static vm:CalenderViewModel}">
+        <template:CalenderView ActivityCollection="{Binding ActivityCollection}"
+                               Year="{Binding Year}"
+                               Month="{Binding Month}">
+            <template:CalenderView.ItemTemplate>
+                <DataTemplate x:DataType="model:Activity">
+                    <ViewCell>
+                        <Grid>
+                            <Frame Margin="10,5">
+                                <StackLayout Padding="15,0,0,0" Spacing="0">
+                                    <Label Text="{Binding Name}"
+                                           FontAttributes="Bold"
+                                           FontSize="Medium" />
+                                    <Label Text="{Binding ActivityType}"
+                                           FontSize="Small"
+                                           LineBreakMode="WordWrap" />
+                                    <Label Text="{Binding TimeOfDay}"
+                                           LineBreakMode="WordWrap" />
+                                    <Label Text="{Binding Description}"
+                                           IsVisible="{Binding HasDescription}"
+                                           LineBreakMode="WordWrap" />
+                                </StackLayout>
+                            </Frame>
+                        </Grid>
+                       
+                    </ViewCell>
+                </DataTemplate>
+            </template:CalenderView.ItemTemplate>
+        </template:CalenderView>
+    </Grid>
+</controls:CustomPage>

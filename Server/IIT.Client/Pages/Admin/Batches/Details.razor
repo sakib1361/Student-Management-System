@@ -1,0 +1,172 @@
+﻿@page "/admin/batches/details/{BatchId:int}"
+@using BlazorInputFile
+@using IIT.Client.Shared.Components
+@inject IMatToaster _matToaster
+@inject IBatchHandler _batchService
+@inject IMemberHandler _memberHandler
+
+
+
+@if (currentBatch == null)
+{
+    <MatProgressBar Indeterminate="true" />
+}
+else
+{
+    <h4 class="p-2">@currentBatch.Name</h4>
+    <CourseView Semesters="currentBatch.Semesters.ToList()"
+                BatchId="currentBatch.Id" />
+    <br />
+    <MatDivider />
+    <br />
+    <div class="card">
+        <div class="card-header">
+            <div>
+                <h3 class="d-inline">Students</h3>
+                <div class="d-inline float-right">
+                    <label @onclick="(() => addStudentDialog = true)"
+                           class="btn btn-outline-primary custom-file-upload">
+                        Add Student
+                    </label>
+                    <label class="btn btn-outline-primary custom-file-upload">
+                        <InputFile OnChange="AddStudentsBatchClick" />
+                        Add Student Ffile
+                    </label>
+                </div>
+            </div>
+
+        </div>
+      
+
+        <div class="card-body">
+            <div class="float-right">
+                <p style="font-size:11px">
+                    *The batch file must contain Roll,Name,Email,Phone with column names
+                </p>
+            </div>
+            @if (addStudentSpinner)
+            {
+                <MatProgressBar Indeterminate="true" />
+            }
+            <StudentsView Students="Students" />
+        </div>
+    </div>
+}
+<MatDialog @bind-IsOpen="@addStudentDialog">
+    <MatDialogTitle>Create Batch</MatDialogTitle>
+    <MatDialogContent>
+        <EditForm OnValidSubmit="@AddStudentsClick" Model="@StudentModel">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <fieldset>
+                <div class="form-group">
+                    <MatTextField @bind-Value="@StudentModel.Name"
+                                  Label="Student Name"
+                                  Icon="@MatIconNames.People"
+                                  IconTrailing="true"
+                                  FullWidth="true"
+                                  Required="true" />
+                </div>
+                <div class="form-group">
+                    <MatTextField @bind-Value="@StudentModel.Roll"
+                                  Label="Roll Number"
+                                  Required="true" />
+                    <MatTextField @bind-Value="@StudentModel.Phone"
+                                  Label="Phone Number"
+                                  Required="false" />
+                </div>
+                <div class="form-group">
+                    <MatTextField @bind-Value="@StudentModel.Email"
+                                  Label="Email"
+                                  Icon="@MatIconNames.Email"
+                                  IconTrailing="true"
+                                  FullWidth="true"
+                                  Required="true" />
+                </div>
+            </fieldset>
+        </EditForm>
+    </MatDialogContent>
+    <MatDialogActions>
+        <MatButton OnClick="@(e => { addStudentDialog = false; })">Cancel</MatButton>
+        <MatButton OnClick="AddStudentsClick">Create Student</MatButton>
+    </MatDialogActions>
+</MatDialog>
+
+@code{
+    Batch currentBatch = new Batch();
+    List<DBUser> Students = new List<DBUser>();
+    AddStudentViewModel StudentModel = new AddStudentViewModel();
+    [Parameter]
+    public int BatchId { get; set; }
+    bool addStudentDialog;
+    bool addStudentSpinner { get; set; }
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (BatchId > 0)
+        {
+            currentBatch = await _batchService.GetBatch(BatchId);
+            Students = currentBatch.Students.OrderBy(x => x.Roll).ToList();
+        }
+        else
+        {
+            _matToaster.Add("Invalid Batch Information", MatToastType.Danger);
+        }
+    }
+
+    private async void AddStudentsClick()
+    {
+        addStudentDialog = false;
+        addStudentSpinner = true;
+        this.StateHasChanged();
+        var res = await _memberHandler.CreateStudent(currentBatch.Id,
+            StudentModel.Roll, StudentModel.Name, StudentModel.Email, StudentModel.Phone);
+        addStudentSpinner = false;
+        if (res == null || res.Actionstatus == false)
+        {
+            _matToaster.Add("Failed to create Student", MatToastType.Danger);
+        }
+        else
+        {
+            _matToaster.Add("Student added successfully", MatToastType.Success);
+            var batch = await _batchService.GetBatch(currentBatch.Id);
+            if (batch != null)
+            {
+                Students = batch.Students.OrderBy(x=>x.Roll).ToList();
+                this.StateHasChanged();
+            }
+        }
+    }
+
+    private async void AddStudentsBatchClick(IFileListEntry[] files)
+    {
+        var currentFile = files.FirstOrDefault();
+        if (currentFile != null)
+        {
+            addStudentSpinner = true;
+            this.StateHasChanged();
+            var dbFile = new DBFile(currentFile.Data, currentFile.Name);
+            var res = await _memberHandler.CreateBatchStudents(currentBatch.Id, dbFile);
+            addStudentSpinner = false;
+            this.StateHasChanged();
+            if (res != null && res.Actionstatus)
+            {
+                _matToaster.Add("Student Batch Update successfull", MatToastType.Success);
+                var batch = await _batchService.GetBatch(currentBatch.Id);
+                if (batch != null)
+                {
+                    Students = batch.Students.ToList();
+                    this.StateHasChanged();
+                }
+            }
+            else
+            {
+                _matToaster.Add("Failed to Upload file", MatToastType.Danger);
+            }
+        }
+    }
+}
+
+

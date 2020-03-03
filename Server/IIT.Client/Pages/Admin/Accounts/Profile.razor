@@ -1,0 +1,55 @@
+﻿@page "/admin/accounts/profile/"
+@inject IMemberHandler _memberService
+@inject IMatToaster _matToaster
+<div class="card m-3">
+    <div class="card-header">
+        <h5>Password</h5>
+    </div>
+    <div class="card-body">
+        <EditForm Model="ChangePasswordModel" OnValidSubmit="ChangeSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <fieldset>
+                <div class="form-group">
+                    <MatTextField @bind-Value="@ChangePasswordModel.CurrentPassword"
+                                  Label="Current Password"
+                                  Type="Password"
+                                  Required="true" />
+                </div>
+                <div class="form-group">
+                    <MatTextField @bind-Value="@ChangePasswordModel.NewPassword"
+                                  Label="New Password"
+                                  Type="Password"
+                                  Required="true" />
+                </div>
+                <div class="form-group">
+                    <MatTextField @bind-Value="@ChangePasswordModel.ConfirmPassword"
+                                  Label="Confirm Password"
+                                  Type="Password"
+                                  Required="true" />
+                </div>
+            </fieldset>
+        </EditForm>
+        <MatButton OnClick="ChangeSubmit" Label="Submit"/>
+    </div>
+</div>
+@code
+{
+    ChangePasswordViewModel ChangePasswordModel = new ChangePasswordViewModel();
+
+    private async void ChangeSubmit()
+    {
+        var resp = await _memberService.ChangePassword(ChangePasswordModel.CurrentPassword, ChangePasswordModel.NewPassword);
+        if(resp == null)
+        {
+            _matToaster.Add("Failed to communicate with Server", MatToastType.Danger);
+        }
+        else
+        {
+            var toast = resp.Actionstatus ? MatToastType.Success : MatToastType.Danger;
+            _matToaster.Add(resp.Message, toast);
+            ChangePasswordModel = new ChangePasswordViewModel();
+            this.StateHasChanged();
+        }
+    }
+}
